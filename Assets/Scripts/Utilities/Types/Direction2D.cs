@@ -2,15 +2,34 @@ using UnityEngine;
 
 public static class Direction2D
 {
-    public static Vector2 Random => Line[UnityEngine.Random.Range(0, COUNT_DIRECT)];
-    public static Vector2Int[] RandomAround => AllArounds[UnityEngine.Random.Range(0, COUNT_AROUND)];
-
-    private static Vector2[] Line { get; } =
+    public static Vector2Int[] Excluding(Vector2Int direction) 
     {
-        Vector2.up, Vector2.right, Vector2.down, Vector2.left,
+        if (direction.x > 0) return directExcluding[0];
+        if (direction.x < 0) return directExcluding[1];
+        if (direction.y > 0) return directExcluding[2];
+        if (direction.y < 0) return directExcluding[3];
+
+        return null;
+    }
+    private static readonly Vector2Int[][] directExcluding =
+    {
+        new Vector2Int[]{ Vector2Int.down, Vector2Int.left, Vector2Int.up },
+        new Vector2Int[]{ Vector2Int.up, Vector2Int.right, Vector2Int.down },
+        new Vector2Int[]{ Vector2Int.right, Vector2Int.down, Vector2Int.left },
+        new Vector2Int[]{ Vector2Int.left, Vector2Int.up, Vector2Int.right },
     };
 
-    private static Vector2Int[][] AllArounds { get; } =
+    public static Vector2Int Random => line[UnityEngine.Random.Range(0, COUNT_DIRECT)];
+    private static readonly Vector2Int[] line =
+    {
+        Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left,
+    };
+    private const int COUNT_DIRECT = 4;
+
+
+    public static Vector2Int[] RandomAround => allArounds[UnityEngine.Random.Range(0, COUNT_AROUND)];
+
+    private static Vector2Int[][] allArounds =
     {
         new Vector2Int[]{ Vector2Int.up, Vector2Int.right, Vector2Int.down },
         new Vector2Int[]{ Vector2Int.right, Vector2Int.down, Vector2Int.left },
@@ -23,6 +42,6 @@ public static class Direction2D
         new Vector2Int[]{ Vector2Int.right, Vector2Int.up, Vector2Int.left },
     };
 
-    private const int COUNT_DIRECT = 4;
+    
     private const int COUNT_AROUND = 8;
 }

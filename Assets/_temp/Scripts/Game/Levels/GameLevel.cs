@@ -76,7 +76,7 @@ public class GameLevel : MonoBehaviour
         int[] groupsCard = CreateGroupsCard();
         _cardsArea.Shuffle();
         Stack<Shape> shapes = GetShapes();
-        Vector3 axis = Direction2D.Random;
+        Vector3 axis = Vector3.one;
         Shape shape; Card card;
 
         for (int i = 0; i < groupsCard.Length; i++)

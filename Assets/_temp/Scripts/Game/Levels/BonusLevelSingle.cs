@@ -58,7 +58,7 @@ public class BonusLevelSingle : ABonusLevel
 
     protected override void SetupCards(Queue<BonusTime> values)
     {
-        Vector3 axis = Direction2D.Random;
+        Vector3 axis = Vector3.one;
         BonusTime bonus = null;
 
         while (_cardsArea.TryGetRandomCard(out TimeCard card))
