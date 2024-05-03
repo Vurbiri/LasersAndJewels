@@ -51,7 +51,6 @@ public class Banners : ASingleton<Banners>
         _banners.GetObject(_container).Setup(message, messageType, time, isThrough);
     }
 
-
     public void Clear()
     {
         Transform child;

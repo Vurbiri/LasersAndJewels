@@ -3,12 +3,13 @@ using UnityEngine;
 
 public class Pool<T> where T : APooledObject<T>
 {
-    private readonly Stack<T> _pool = new();
+    private readonly Stack<T> _pool;
     private readonly T _prefab;
     private readonly Transform _repository;
 
-    public Pool(T prefab, Transform repository, int size = 0)
+    public Pool(T prefab, Transform repository, int size)
     {
+        _pool = new(size);
         _prefab = prefab;
         _repository = repository;
         for (int i = 0; i < size; i++)
@@ -37,13 +38,13 @@ public class Pool<T> where T : APooledObject<T>
         return gameObjects;
     }
 
-    private void OnDeactivate(T poolObject)
+    protected void OnDeactivate(T poolObject)
     {
         poolObject.SetParent(_repository);
         _pool.Push(poolObject);
     }
 
-    private T CreateObject()
+    protected virtual T CreateObject()
     {
         T gameObject = Object.Instantiate(_prefab);
         gameObject.Initialize();

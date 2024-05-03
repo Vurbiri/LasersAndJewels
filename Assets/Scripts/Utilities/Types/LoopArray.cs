@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public class Loop<T>
+public class LoopArray<T>
 {
     private const int CAPACITY_DEFAULT = 4;
     private T[] _array;
@@ -31,8 +28,8 @@ public class Loop<T>
         }
     }
 
-    public Loop() => _array = new T[_capacity];
-    public Loop(int capacity)
+    public LoopArray() => _array = new T[_capacity];
+    public LoopArray(int capacity)
     {
         if (capacity > 0)
             _capacity = capacity;

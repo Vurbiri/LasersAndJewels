@@ -3,27 +3,27 @@ using UnityEngine;
 
 public class LevelGenerator
 {
-    private readonly bool[,] _values;
+    private readonly BoolArea _area;
     private List<Vector2Int> _positions;
-    private Vector2Int _size, _zero;
+    private Vector2Int _zero;
     private int _maxDistance = 8;
 
     public LevelGenerator(Vector2Int size)
     {
-        _values = new bool[size.x, size.y];
+        _area = new(size);
         _maxDistance = Mathf.Min(size.x, size.y);
-        _size = size;
     }
 
-    public JewelsChain Simple(int count, int maxDistance)
+    public PositionsChain Simple(int count, int maxDistance)
     {
         _positions = new(count);
         _maxDistance = maxDistance;
 
-        Vector2Int current = _zero = URandom.Vector2Int(_size), excluding = Direction2D.Random;
+        Vector2Int current = _zero = URandom.Vector2Int(_area.Size), excluding = Direction2D.Random;
         while (IsEmpty(_zero))
             _zero += excluding;
 
+        Vector2Int zeroOrientation = -excluding;
         Vector2Int[] directions;
         bool result = false;
         int error = 0;
@@ -40,8 +40,8 @@ public class LevelGenerator
             if (!result)
             {
                 error++;
-                for (int i = 0; i <= Mathf.Min(error >> 2, _positions.Count - 3); i++)
-                    RemoveLast();
+                for (int i = 0; i <= Mathf.Min(error >> 3, _positions.Count - 2); i++)
+                RemoveLast();
             }
             else
             {
@@ -51,9 +51,9 @@ public class LevelGenerator
             excluding = _positions[^2] - _positions[^1];
         }
 
-        //Debug.Log(attempt);
+        Debug.Log(error);
         Clear();
-        return new(_positions, _zero, result);
+        return new(_positions, _zero, zeroOrientation, result);
     }
 
     private bool TryAdd(Vector2Int direction, out Vector2Int current)
@@ -64,7 +64,7 @@ public class LevelGenerator
 
         Vector2Int end = start;
         int steps = _maxDistance;
-        while (IsEmpty(end += direction) && --steps > 0) ;
+        while (IsEmpty(end += direction) && --steps > 0);
 
         if (IsNotBetween(current = URandom.Vector2Int(start, end)))
             return true;
@@ -101,29 +101,43 @@ public class LevelGenerator
         }
         #endregion
     }
-        
 
     private void Add(Vector2Int position)
     {
         _positions.Add(position);
-        _values[position.x, position.y] = true;
+        _area.Add(position);
     }
 
-    private void RemoveLast()
-    {
-        _values[_positions[^1].x, _positions[^1].y] = false;
-        _positions.RemoveAt(_positions.Count - 1);
-    }
+    private void RemoveLast() => _area.Remove(_positions.Pop());
 
     public void Clear()
     {
-        foreach (Vector2Int index in _positions)
-            _values[index.x, index.y] = false;
+        foreach (Vector2Int position in _positions)
+            _area.Remove(position);
     }
 
-    private bool IsEmpty(Vector2Int index) => IsCorrectIndex(index) && !_values[index.x, index.y];
+    private bool IsEmpty(Vector2Int index) => _area.IsEmpty(index);
 
-    private bool IsCorrectIndex(Vector2Int index) => IsCorrectIndexX(index.x) && IsCorrectIndexY(index.y);
-    private bool IsCorrectIndexX(int x) => x >= 0 && x < _size.x;
-    private bool IsCorrectIndexY(int y) => y >= 0 && y < _size.y;
+
+    #region Nested Classe
+    //***********************************
+    private class BoolArea
+    {
+        private readonly bool[,] _area;
+        Vector2Int _size;
+
+        public Vector2Int Size => _size;
+
+        public BoolArea(Vector2Int size)
+        {
+            _area = new bool[size.x, size.y];
+            _size = size;
+        }
+
+        public void Add(Vector2Int index) => _area[index.x, index.y] = true;
+        public void Remove(Vector2Int index) => _area[index.x, index.y] = false;
+
+        public bool IsEmpty(Vector2Int index) => index.x >= 0 && index.x < _size.x && index.y >= 0 && index.y < _size.y && !_area[index.x, index.y];
+    }
+    #endregion
 }

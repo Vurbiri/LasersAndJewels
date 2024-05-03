@@ -1,19 +1,23 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JewelsChain
+public class JewelsChain : IEnumerable<IJewel>
 {
-    public List<Vector2Int> Jewels { get; }
-    public Vector2Int Laser { get; }
+    public HashSet<IJewel> Jewels { get; }
+    public Vector2Int Last { get; }
+    public bool IsLast { get; }
     public int Count { get; }
-    public bool IsBuilding { get; }
 
-    public JewelsChain(List<Vector2Int> jewels, Vector2Int laser, bool isBuilding)
+    public JewelsChain(HashSet<IJewel> jewels, Vector2Int last, bool isLast)
     {
         Jewels = jewels;
-        Laser = laser;
-        Count = jewels.Count;
+        Last = last;
+        IsLast = isLast;
 
-        IsBuilding = isBuilding;
+        Count = jewels.Count;
     }
+
+    public IEnumerator<IJewel> GetEnumerator() => Jewels.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Jewels.GetEnumerator();
 }

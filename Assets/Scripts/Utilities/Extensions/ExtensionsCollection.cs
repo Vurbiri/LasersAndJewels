@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public static class ExtensionsCollection
 {
-    public static T RandomPull<T>(this List<T> self)
+    public static T Pop<T>(this List<T> self)
     {
-        int index = UnityEngine.Random.Range(0, self.Count);
-        T obj = self[index]; self.RemoveAt(index);
+        T obj = self[^1]; self.RemoveAt(self.Count - 1);
         return obj;
     }
 
