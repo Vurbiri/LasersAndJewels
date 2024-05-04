@@ -7,7 +7,6 @@ public class Jewel : AJewel<Jewel>, IMouseClick
 {
     [Space]
     [SerializeField] private TMP_Text _textCount;
-    [SerializeField] private float _scaleFontSize = 2.5f;
 
     private Transform _spriteTransform;
     private BoxCollider2D _collider;
@@ -24,11 +23,6 @@ public class Jewel : AJewel<Jewel>, IMouseClick
         _collider = GetComponent<BoxCollider2D>();
 
         IsInteractable = false;
-
-        Vector2 size = Vector2.one * s_size;
-        _collider.size = size;
-        _textCount.GetComponent<RectTransform>().sizeDelta = size;
-        _textCount.fontSize = s_size * _scaleFontSize;
 
         _turnData.Add(new(0f, Vector2Int.down));
         _turnData.Add(new(270f, Vector2Int.left));

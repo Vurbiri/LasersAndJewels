@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,8 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(ActorsPool))]
 public class GameArea : MonoBehaviour
 {
-    [SerializeField] private Vector2 _size = new(860f, 860f);
-    [SerializeField] private Vector2Int _countSide = new(8, 8);
+    [SerializeField] private Vector2Int _size = new(10, 9);
     [Space]
     [SerializeField] private LineRenderer _laserRay;
 
@@ -17,15 +17,15 @@ public class GameArea : MonoBehaviour
     private JewelStart _jewelStart;
     private List<IJewel> _jewels = new();
 
-    private int _countJewel = 18;
+    private int _countJewel = 23;
 
     private void Awake()
     {
         _jewelsPool = GetComponent<ActorsPool>();
-        _jewelsPool.Initialize(_size.x / _countSide.x, OnSelected);
+        _jewelsPool.Initialize(OnSelected);
 
-        _generator = new(_countSide);
-        _area = new(_countSide);
+        _generator = new(_size);
+        _area = new(_size);
 
         #region Local function
         //======================
@@ -72,7 +72,7 @@ public class GameArea : MonoBehaviour
             positions[count++] = jewel.LocalPosition;
         }
         if (chain.IsLast) 
-            positions[count] = JewelStart.CalkLocalPosition(chain.Last);
+            positions[count] = chain.Last;
 
         _laserRay.SetPositions(positions);
     }
@@ -82,7 +82,7 @@ public class GameArea : MonoBehaviour
 
         _area.Start = jewelsChain.Positions[0];
         _jewelStart = _jewelsPool.GetJewelStart(jewelsChain.Start, jewelsChain.StartOrientation);
-        _jewelStart.On();
+        //_jewelStart.On();
 
         foreach (Vector2Int index in jewelsChain.Positions)
             Add(_jewelsPool.GetJewel(index, count++));
@@ -101,5 +101,14 @@ public class GameArea : MonoBehaviour
         #endregion
     }
 
+#if UNITY_EDITOR
+    public void OnDrawGizmosSelected()
+    {
+        Gizmos.matrix = Matrix4x4.identity;
+        Gizmos.color = Color.red;
+        Vector3 size = _size.ToVector3();
+        Gizmos.DrawWireCube(transform.position + size * 0.5f, size);
+    }
 
+#endif
 }

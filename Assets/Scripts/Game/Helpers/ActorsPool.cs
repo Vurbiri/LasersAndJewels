@@ -20,12 +20,8 @@ public class ActorsPool : MonoBehaviour
     private Pool<JewelStart> _poolJewelStart;
     private Pool<JewelEnd> _poolJewelEnd;
 
-    public void Initialize(float sizeJewels, Action onSelected)
+    public void Initialize(Action onSelected)
     {
-        Jewel.Size = sizeJewels;
-        JewelStart.Size = sizeJewels;
-        JewelEnd.Size = sizeJewels;
-
         _poolJewel = new(_prefabJewel, _repository, _sizePoolJewel, onSelected);
         _poolJewelStart = new(_prefabJewelStart, _repository, _sizePoolJewelStart);
         _poolJewelEnd = new(_prefabJewelEnd, _repository, _sizePoolJewelEnd);

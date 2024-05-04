@@ -5,14 +5,14 @@ using UnityEngine;
 public class JewelsChain : IEnumerable<IJewel>
 {
     public HashSet<IJewel> Jewels { get; }
-    public Vector2Int Last { get; }
+    public Vector3 Last { get; }
     public bool IsLast { get; }
     public int Count { get; }
 
     public JewelsChain(HashSet<IJewel> jewels, Vector2Int last, bool isLast)
     {
         Jewels = jewels;
-        Last = last;
+        Last = last.ToVector3();
         IsLast = isLast;
 
         Count = jewels.Count;

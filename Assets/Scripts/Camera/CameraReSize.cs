@@ -9,14 +9,14 @@ public class CameraReSize : MonoBehaviour
 
     private Camera _thisCamera;
     private float _aspectRatioOld = 0f;
-    private float _verticalHalfSizeMin = 500f;
-    private float _horizontalHalfSizeMin = 800f;
+    private float _verticalHalfSizeMin = 5f;
+    private float _horizontalHalfSizeMin = 8f;
 
     private void Awake()
     {
         _thisCamera = GetComponent<Camera>();
-        _verticalHalfSizeMin = _canvasScaler.referenceResolution.y / 2f;
-        _horizontalHalfSizeMin = _canvasScaler.referenceResolution.x / 2f;
+        _verticalHalfSizeMin = _canvasScaler.referenceResolution.y / 200f;
+        _horizontalHalfSizeMin = _canvasScaler.referenceResolution.x / 200f;
     }
 
     private void Update()
