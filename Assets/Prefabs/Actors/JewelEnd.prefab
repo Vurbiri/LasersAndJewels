@@ -307,7 +307,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 0.95686275}
+      maxColor: {r: 1, g: 1, b: 1, a: 0.9411765}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4962,7 +4962,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 4966500957111046957}
   _particle: {fileID: 2466002474862386052}
-  _colorOn: {r: 1, g: 1, b: 1, a: 0.90588236}
+  _colors:
+  - {r: 0.87058824, g: 0.87058824, b: 1, a: 1}
+  - {r: 0.827451, g: 1, b: 0.1764706, a: 1}
+  _alfaOn: 0.85
   _spriteOn: {fileID: 21300000, guid: 941ffbdfcf5c4ad42804e6404888ac5a, type: 3}
-  _colorOff: {r: 1, g: 1, b: 1, a: 0.6509804}
+  _alfaOff: 0.55
   _spriteOff: {fileID: 21300000, guid: 5ddd8bc1c9d94b64090cf6bfd414f76d, type: 3}
+  _index: {x: 0, y: 0}

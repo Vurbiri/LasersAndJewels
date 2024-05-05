@@ -51,7 +51,7 @@ public class LevelGenerator
             excluding = _positions[^2] - _positions[^1];
         }
 
-        Debug.Log(error);
+        //Debug.Log(error);
         Clear();
         return new(_positions, _zero, zeroOrientation, result);
     }

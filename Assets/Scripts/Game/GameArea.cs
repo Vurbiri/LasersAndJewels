@@ -1,31 +1,30 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 
 [RequireComponent(typeof(ActorsPool))]
 public class GameArea : MonoBehaviour
 {
     [SerializeField] private Vector2Int _size = new(10, 9);
-    [Space]
-    [SerializeField] private LineRenderer _laserRay;
 
-    private ActorsPool _jewelsPool;
+    private ActorsPool _actorsPool;
     private LevelGenerator _generator;
     private JewelsArea _area;
 
-    private JewelStart _jewelStart;
+    private Laser _laser;
     private List<IJewel> _jewels = new();
 
-    private int _countJewel = 23;
+    private int _countJewel = 25;
 
     private void Awake()
     {
-        _jewelsPool = GetComponent<ActorsPool>();
-        _jewelsPool.Initialize(OnSelected);
+        _actorsPool = GetComponent<ActorsPool>();
+        _actorsPool.Initialize(OnSelected);
 
         _generator = new(_size);
         _area = new(_size);
+
 
         #region Local function
         //======================
@@ -36,58 +35,65 @@ public class GameArea : MonoBehaviour
     private void Start()
     {
         PositionsChain chain;
-        int attempts = 0;
+        int attempts = 0, maxAttempts = 1000;
+
         do
         {
             chain = _generator.Simple(_countJewel, 5);
-            attempts++;
         }
-        while (!chain.IsBuilding);
+        while (!chain.IsBuilding && attempts++ < maxAttempts);
 
         _jewels = new(_countJewel);
-        Debug.Log(attempts + "\n============================");
         Create(chain);
+
+        Debug.Log(attempts + "\n============================");
+
     }
 
     private void OnSelected()
     {
-        foreach (IJewel jewel in _jewels)
-            jewel.Off();
+        JewelsChain chain = _area.Chain(_laser.Orientation);
 
-        JewelsChain chain = _area.Chain(_jewelStart.Orientation);
+        bool isLevelComplete = _countJewel == chain.Count;
+        Vector3[] positions = new Vector3[chain.Count + (chain.IsLast ? 2 : 1)];
 
-        Debug.Log(chain.IsLast);
-        if (_countJewel == chain.Count)
-            Debug.Log("-=/ Level complete \\=-");
-
-        int count = chain.Count + (chain.IsLast ? 2 : 1);
-        _laserRay.positionCount = count;
-        Vector3[] positions = new Vector3[count];
-
-        positions[0] = _jewelStart.LocalPosition;
-        count = 1;
+        positions[0] = _laser.StartPosition;
+        int count = 1;
         foreach (IJewel jewel in chain)
         {
-            jewel.On();
+            jewel.TurnOn(isLevelComplete);
             positions[count++] = jewel.LocalPosition;
         }
         if (chain.IsLast) 
             positions[count] = chain.Last;
 
-        _laserRay.SetPositions(positions);
+        _laser.SetRayPositions(positions);
+
+        foreach (IJewel jewel in _jewels)
+            jewel.TurnOff();
+
+        if (isLevelComplete)
+            Debug.Log("-=/ Level complete \\=-");
     }
     public void Create(PositionsChain jewelsChain)
     {
         int count = 0;
 
         _area.Start = jewelsChain.Positions[0];
-        _jewelStart = _jewelsPool.GetJewelStart(jewelsChain.Start, jewelsChain.StartOrientation);
-        //_jewelStart.On();
+        _laser = _actorsPool.GetLaser(jewelsChain.Start, jewelsChain.StartOrientation, 0);
 
+        IJewel jewel = null;
         foreach (Vector2Int index in jewelsChain.Positions)
-            Add(_jewelsPool.GetJewel(index, count++));
+        {
+            jewel = _actorsPool.GetJewel(index, 0, count++);
+            Add(jewel);
+            jewel.Run();
+        }
 
-        Add(_jewelsPool.GetJewelEnd(jewelsChain.End));
+        jewel = _actorsPool.GetJewelEnd(jewelsChain.End, 0);
+        Add(jewel);
+        jewel.Run();
+
 
         OnSelected();
 
