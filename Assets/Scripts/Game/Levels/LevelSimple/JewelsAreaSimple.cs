@@ -1,30 +1,33 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JewelsArea
+public class JewelsAreaSimple
 {
-    private readonly IJewel[,] _area;
-    Vector2Int _size;
-
-    public Vector2Int Start { get; set; }
+    private IJewel[,] _area;
+    Vector2Int _size, _start, _laserOrientation;
 
     private IJewel this[Vector2Int index] { get => _area[index.x, index.y]; set => _area[index.x, index.y] = value; }
 
-    public JewelsArea(Vector2Int size)
+    public JewelsAreaSimple(Vector2Int size)
     {
         _area = new IJewel[size.x, size.y];
         _size = size;
     }
 
+    public void Setup(PositionsChainSimple positionsChain)
+    {
+        _start = positionsChain.Jewels[0].Index;
+        _laserOrientation = positionsChain.Laser.Orientation;
+    }
+
     public void Add(IJewel jewel) => this[jewel.Index] = jewel;
 
-    public JewelsChain Chain(Vector2Int directionOld)
+    public JewelsChain Chain()
     {
         HashSet<IJewel> jewels = new();
         
-        IJewel current = this[Start];
-        Vector2Int direction = current.Orientation, index = Start;
+        IJewel current = this[_start];
+        Vector2Int direction = current.Orientation, directionOld = _laserOrientation, index = _start;
 
         while (jewels.Add(current) && direction != Vector2Int.zero) 
         {
@@ -39,7 +42,7 @@ public class JewelsArea
 
         return new(jewels, index, direction != Vector2Int.zero && directionOld != -direction);
     }
-
+    public void Reset() => _area = new IJewel[_size.x, _size.y];
 
     private bool IsEmpty(Vector2Int index) => IsCorrect(index) && _area[index.x, index.y] == null;
     private bool IsCorrect(Vector2Int index) => index.x >= 0 && index.x < _size.x && index.y >= 0 && index.y < _size.y;

@@ -294,11 +294,12 @@ MonoBehaviour:
   _colors:
   - {r: 0.87058824, g: 0.87058824, b: 1, a: 1}
   - {r: 0.827451, g: 1, b: 0.1764706, a: 1}
-  _alfaOn: 0.85
+  - {r: 0.5529412, g: 0.23921569, b: 0.84313726, a: 1}
+  _brightnessParticle: 1.2
+  _alfaOn: 0.875
   _spriteOn: {fileID: 21300000, guid: b4e7c5edd9997ea43b6491e85a4c579a, type: 3}
   _alfaOff: 0.55
   _spriteOff: {fileID: 21300000, guid: 80dd7e9d76eba294ea516ec90ab653d8, type: 3}
-  _index: {x: 0, y: 0}
   _textCount: {fileID: 9017782455064332976}
 --- !u!61 &-9153313997721469998
 BoxCollider2D:

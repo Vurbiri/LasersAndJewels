@@ -19,38 +19,38 @@ public class ActorsPool : MonoBehaviour
     
 
     private PoolJewels _poolJewel;
-    private PoolJewelsSimple _poolJewelSimple;
+    //private PoolJewelsSimple _poolJewelSimple;
     private Pool<JewelEnd> _poolJewelEnd;
     private Pool<Laser> _poolLaser;
 
     public void Initialize(Action onSelected)
     {
         _poolJewel = new(_prefabJewel, _repository, _sizePoolJewel, onSelected);
-        _poolJewelSimple = new(_sizePoolJewel);
+        //_poolJewelSimple = new(_sizePoolJewel);
         _poolJewelEnd = new(_prefabJewelEnd, _repository, _sizePoolJewelEnd);
         _poolLaser = new(_prefabLaser, _repository, _sizePoolLaser);
     }
 
-    public Jewel GetJewel(Vector2Int index, byte idType, int count)
+    public Jewel GetJewel(JewelSimple jewelSimple, int count)
     {
         Jewel jewel = _poolJewel.GetObject(_container);
-        jewel.Setup(index, idType, count);
+        jewel.Setup(jewelSimple, count);
         return jewel;
     }
 
-    public JewelsSimple GetJewelsSimple(Vector2Int index, byte idType) => _poolJewelSimple.GetJewelsSimple(index, idType);
+    //public JewelSimple GetJewelsSimple(Vector2Int index, byte idType) => _poolJewelSimple.GetJewelsSimple(index, idType);
 
-    public JewelEnd GetJewelEnd(Vector2Int index, byte idType)
+    public JewelEnd GetJewelEnd(JewelSimple jewelSimple)
     {
         JewelEnd jewel = _poolJewelEnd.GetObject(_container);
-        jewel.Setup(index, idType);
+        jewel.Setup(jewelSimple);
         return jewel;
     }
 
-    public Laser GetLaser(Vector2Int index, Vector2Int orientation, byte idType)
+    public Laser GetLaser(LaserSimple laserSimple)
     {
         Laser laser = _poolLaser.GetObject(_container);
-        laser.Setup(index, orientation, idType);
+        laser.Setup(laserSimple);
         return laser;
     }
 
@@ -75,36 +75,36 @@ public class ActorsPool : MonoBehaviour
         }
     }
     //***********************************
-    private class PoolJewelsSimple
-    {
-        private readonly Stack<JewelsSimple> _pool;
+    //private class PoolJewelsSimple
+    //{
+    //    private readonly Stack<JewelSimple> _pool;
 
-        public PoolJewelsSimple(int size)
-        {
-            _pool = new(size);
-            for (int i = 0; i < size; i++)
-                _pool.Push(CreateObject());
-        }
+    //    public PoolJewelsSimple(int size)
+    //    {
+    //        _pool = new(size);
+    //        for (int i = 0; i < size; i++)
+    //            _pool.Push(CreateObject());
+    //    }
 
-        public JewelsSimple GetJewelsSimple(Vector2Int index, byte idType)
-        {
-            JewelsSimple JewelsSimple;
-            if (_pool.Count == 0)
-                JewelsSimple = CreateObject();
-            else
-                JewelsSimple = _pool.Pop();
+    //    public JewelSimple GetJewelsSimple(Vector2Int index, byte idType)
+    //    {
+    //        JewelSimple JewelsSimple;
+    //        if (_pool.Count == 0)
+    //            JewelsSimple = CreateObject();
+    //        else
+    //            JewelsSimple = _pool.Pop();
 
-            JewelsSimple.Setup(index, idType);
+    //        JewelsSimple.Setup(index, idType);
 
-            return JewelsSimple;
-        }
+    //        return JewelsSimple;
+    //    }
 
-        private JewelsSimple CreateObject()
-        {
-            JewelsSimple jewelsSimple = new();
-            jewelsSimple.EventDeactivate += (j) => _pool.Push(j);
-            return jewelsSimple;
-        }
-    }
+    //    private JewelSimple CreateObject()
+    //    {
+    //        JewelSimple jewelsSimple = new();
+    //        jewelsSimple.EventDeactivate += (j) => _pool.Push(j);
+    //        return jewelsSimple;
+    //    }
+    //}
     #endregion
 }

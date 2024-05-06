@@ -32,12 +32,12 @@ public class Jewel : AJewel<Jewel>, IMouseClick
         base.Initialize();
     }
 
-    public void Setup(Vector2Int index, byte idType, int count)
+    public void Setup(JewelSimple jewelSimple, int count)
     {
-        BaseSetup(index, idType);
+        BaseSetup(jewelSimple);
 
         _textCount.text = count.ToString();
-        //_textCount.color = colorOn.SetAlpha(1f);
+        _textCount.color = _colorOn.Brightness(_brightnessParticle);
     }
 
     public override void Run()

@@ -23,15 +23,16 @@ public class Laser : APooledObject<Laser>
         _spriteTransform = _spriteRenderer.transform;
     }
 
-    public void Setup(Vector2Int index, Vector2Int orientation, byte idType)
+    public void Setup(LaserSimple laserSimple)
     {
-        _idType = idType;
-        _index = index;
-        _orientation = orientation;
-        _thisTransform.localPosition = Vector3.zero;
-        _spriteTransform.localPosition = index.ToVector3();
+        _idType = laserSimple.IdType;
+        _index = laserSimple.Index;
+        _orientation = laserSimple.Orientation;
 
-        _laserRay.startColor = _laserRay.endColor = _colors[idType];
+        _thisTransform.localPosition = Vector3.zero;
+        _spriteTransform.localPosition = _index.ToVector3();
+
+        _laserRay.startColor = _laserRay.endColor = _colors[_idType];
         //_spriteRenderer.color = color;
 
         Activate();

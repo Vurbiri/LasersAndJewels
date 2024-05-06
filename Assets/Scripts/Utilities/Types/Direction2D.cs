@@ -20,6 +20,7 @@ public static class Direction2D
     };
 
     public static Vector2Int Random => line[UnityEngine.Random.Range(0, COUNT_DIRECT)];
+    public static Vector2Int[] Line => line;
     private static readonly Vector2Int[] line =
     {
         Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left,
@@ -28,8 +29,7 @@ public static class Direction2D
 
 
     public static Vector2Int[] RandomAround => allArounds[UnityEngine.Random.Range(0, COUNT_AROUND)];
-
-    private static Vector2Int[][] allArounds =
+    private readonly static Vector2Int[][] allArounds =
     {
         new Vector2Int[]{ Vector2Int.up, Vector2Int.right, Vector2Int.down },
         new Vector2Int[]{ Vector2Int.right, Vector2Int.down, Vector2Int.left },
@@ -41,7 +41,5 @@ public static class Direction2D
         new Vector2Int[]{ Vector2Int.down, Vector2Int.right, Vector2Int.up },
         new Vector2Int[]{ Vector2Int.right, Vector2Int.up, Vector2Int.left },
     };
-
-    
     private const int COUNT_AROUND = 8;
 }

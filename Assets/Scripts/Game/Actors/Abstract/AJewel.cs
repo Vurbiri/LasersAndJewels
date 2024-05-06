@@ -8,6 +8,8 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
     [Space]
     [SerializeField] private Color[] _colors;
     [Space]
+    [SerializeField] protected float _brightnessParticle = 1.2f;
+    [Space]
     [SerializeField] private float _alfaOn = 0.85f;
     [SerializeField] private Sprite _spriteOn;
     [SerializeField] private float _alfaOff = 0.55f;
@@ -33,13 +35,13 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         base.Initialize();
     }
 
-    protected void BaseSetup(Vector2Int index, byte idType)
+    protected void BaseSetup(JewelSimple jewelSimple)
     {
-        _idType = idType;
-        _index = index;
+        _idType = jewelSimple.IdType;
+        _index = jewelSimple.Index;
         
-        Color color = _colors[idType];
-        _mainParticle.startColor = color;
+        Color color = _colors[_idType];
+        _mainParticle.startColor = color.Brightness(_brightnessParticle);
         _colorOn = color.SetAlpha(_alfaOn);
         _colorOff = color.SetAlpha(_alfaOff);
 
