@@ -6,7 +6,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
     [SerializeField] protected SpriteRenderer _spriteRenderer;
     [SerializeField] private ParticleSystem _particle;
     [Space]
-    [SerializeField] private Color[] _colors;
+    [SerializeField] protected Color[] _colors;
     [Space]
     [SerializeField] protected float _brightnessParticle = 1.2f;
     [Space]
@@ -15,16 +15,17 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
     [SerializeField] private float _alfaOff = 0.55f;
     [SerializeField] private Sprite _spriteOff;
 
-    public byte IdType => _idType;
+    public int IdType => _idType;
+    public bool IsVisited { get => _isVisited; set => _isVisited = value; }
     public Vector2Int Index => _index;
     public Vector2Int Orientation { get; protected set; } = Vector2Int.zero;
     public Vector3 LocalPosition => _thisTransform.localPosition;
 
     ParticleSystem.MainModule _mainParticle;
 
-    private byte _idType;
+    private int _idType;
     private Vector2Int _index;
-    private bool _isOn = true, _protection = false;
+    private bool _isOn = true, _isVisited = false;
     protected Color _colorOn = Color.white;
     protected Color _colorOff = Color.gray;
 
@@ -45,21 +46,32 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _colorOn = color.SetAlpha(_alfaOn);
         _colorOff = color.SetAlpha(_alfaOff);
 
+        _isOn = true;
+        _isVisited = false;
+
         Run();
     }
 
     public virtual void Run()
     {
         _thisTransform.localPosition = _index.ToVector3();
-        _isOn = true;
-        TurnOff();
+        Off();
         Activate();
     }
 
-    public abstract void TurnOn(bool isLevelComplete);
-    protected void TurnOn()
+    public void Switch(bool isLevelComplete)
     {
-        _protection = true;
+        if (_isVisited)
+            On(isLevelComplete);
+        else
+            Off();
+
+        _isVisited = false;
+    }
+
+    protected abstract void On(bool isLevelComplete);
+    protected void BaseOn()
+    {
         if (_isOn) return;
         
         _isOn = true;
@@ -68,13 +80,9 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _particle.Play();
     }
 
-    public void TurnOff()
+    public void Off()
     {
-        if(_protection || !_isOn)
-        {
-            _protection = false;
-            return;
-        }
+        if (!_isOn) return;
 
         _isOn = false;
         _spriteRenderer.color = _colorOff;

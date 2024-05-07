@@ -1,81 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class LevelTwo
+public class LevelTwo : ALevel
 {
-    private readonly ActorsPool _actorsPool;
-    private readonly LevelGeneratorTwo _generator;
-    private readonly JewelsAreaSimple _area;
-    private Vector2Int _size;
+    private LevelGeneratorTwo _generator;
 
-    private int _countJewelOne, _countJewelTwo;
-    private Laser _laserOne, _laserTwo;
-    private List<IJewel> _jewelsOne, _jewelsTwo;
+    private Laser _laserTwo;
+    private IJewel _startOne, _startTwo;
 
-    public LevelTwo(Vector2Int size, ActorsPool actorsPool)
+    public override LevelType Type => LevelType.LevelTwo;
+
+    public LevelTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
-        _size = size;
-        _actorsPool = actorsPool;
-
-        _generator = new(_size);
-        _area = new(_size);
+        _generator = new(size);
     }
 
-    public bool Create(int countOne, byte typeOne, int countTwo, byte typeTwo, byte chance, int maxDistance)
+    //public override void Initialize(Vector2Int size, ActorsPool actorsPool)
+    //{
+    //    base.Initialize(size, actorsPool);
+    //    _generator = new(size);
+    //}
+
+    public override bool Create(int count, int maxDistance)
     {
-        Reset();
+        _count = count;
+        int countOne = count >> 1 - Random.Range(0, (count >> 3) + 1);
+        int countTwo = count - countOne;
+        int typeOne = 1, typeTwo = 2;
 
         PositionsChainSimple[] positionsChain = Generate();
         if (positionsChain == null) return false;
 
-        _jewelsOne = new(countOne);
-        _jewelsTwo = new(countTwo);
-        //_area.Setup(positionsChain);
+        _jewels = new(count);
 
-        _laserOne = _actorsPool.GetLaser(positionsChain[0].Laser);
-
-        countOne = countTwo = 0;
-        foreach (var jewel in positionsChain[0].Jewels)
-            AddOne(_actorsPool.GetJewel(jewel, countOne++));
-
-        AddOne(_actorsPool.GetJewelEnd(positionsChain[0].End));
-
-        _laserTwo = _actorsPool.GetLaser(positionsChain[1].Laser);
-
-        foreach (var jewel in positionsChain[1].Jewels)
-            AddTwo(_actorsPool.GetJewel(jewel, countTwo++));
-
-        AddTwo(_actorsPool.GetJewelEnd(positionsChain[1].End));
+        Spawn(positionsChain[0], ref _laserOne, ref _startOne, typeOne);
+        Spawn(positionsChain[1], ref _laserTwo, ref _startTwo, typeTwo);
 
         return true;
 
         #region Local functions
         //======================
-        void Reset()
-        {
-            _countJewelOne = countOne;
-            _countJewelTwo = countTwo;
-            if (_laserOne == null) return;
-
-            _laserOne.Deactivate();
-            _laserOne = null;
-            _laserTwo.Deactivate();
-            _laserTwo = null;
-            _jewelsOne.ForEach((j) => j.Deactivate());
-            _jewelsOne = null;
-            _jewelsTwo.ForEach((j) => j.Deactivate());
-            _jewelsTwo = null;
-            _area.Reset();
-        }
-        //======================
         PositionsChainSimple[] Generate()
         {
             PositionsChainSimple[] chain;
-            int attempts = 0, maxAttempts = (countOne + countTwo) << 3;
+            int attempts = 0, maxAttempts = count << 3;
 
-            do chain = _generator.Generate(countOne, typeOne, countTwo, typeTwo, chance, maxDistance);
+            do chain = _generator.Generate(countOne, typeOne, countTwo, typeTwo, Random.Range(40, 61), maxDistance);
             while (++attempts < maxAttempts && chain == null);
 
             Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");
@@ -83,24 +52,74 @@ public class LevelTwo
             return chain;
         }
         //======================
-        void AddOne(IJewel jewel)
+        void Spawn(PositionsChainSimple chain, ref Laser laser, ref IJewel start, int group)
         {
-            //_area.Add(jewel);
-            _jewelsOne.Add(jewel);
-        }
-        //======================
-        void AddTwo(IJewel jewel)
-        {
-            //_area.Add(jewel);
-            _jewelsTwo.Add(jewel);
+            laser = _actorsPool.GetLaser(chain.Laser, _count);
+            Add(start = _actorsPool.GetJewel(chain.Jewels[0], 1, group));
+            for (int i = 1; i < chain.Count; i++)
+                Add(_actorsPool.GetJewel(chain.Jewels[i], i + 1, group));
+            Add(_actorsPool.GetJewelEnd(chain.End));
         }
         #endregion
     }
 
-    public void Run()
+    public override bool CheckChain()
     {
-        _jewelsOne.ForEach((j) => j.Run());
-        _jewelsTwo.ForEach((j) => j.Run());
-        //Check();
+        bool isLevelComplete = CheckChain(_laserOne, _startOne, _laserTwo.IdType) + CheckChain(_laserTwo, _startTwo, _laserOne.IdType) == _count;
+
+        foreach (IJewel jewel in _jewels)
+            jewel.Switch(isLevelComplete);
+
+        return isLevelComplete;
+    }
+
+    private int CheckChain(Laser laser, IJewel current, int errorType)
+    {
+        int count = 1;
+
+        Vector2Int index = current.Index, direction = current.Orientation, directionOld = laser.Orientation;
+
+        while (Visited(current) && direction != Vector2Int.zero)
+        {
+            while (IsEmpty(index += direction)) ;
+
+            if (!IsCorrect(index)) break;
+
+            current = this[index];
+            directionOld = direction;
+            direction = current.Orientation;
+        }
+
+        int countVisited = count - 1;
+
+        if ((direction != Vector2Int.zero && directionOld != -direction) || current.IdType == errorType)
+            laser.PositionsRay[count++] = index.ToVector3();
+
+        laser.SetRayPositions(count);
+
+        return countVisited;
+
+        #region Local functions
+        //======================
+        bool Visited(IJewel jewel)
+        {
+            if (jewel.IsVisited || jewel.IdType == errorType) return false;
+
+            laser.PositionsRay[count++] = jewel.LocalPosition;
+            return jewel.IsVisited = true;
+        }
+        //bool IsMove(Vector2Int index)
+        //{
+        //    return IsCorrect(index) && (_area[index.x, index.y] == null || _area[index.x, index.y].IdType == errorType);
+        //}
+        #endregion
+    }
+
+
+    public override void Clear()
+    {
+        base.Clear();
+        _laserTwo.Deactivate();
+        _laserTwo = null;
     }
 }

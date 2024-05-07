@@ -31,10 +31,10 @@ public class ActorsPool : MonoBehaviour
         _poolLaser = new(_prefabLaser, _repository, _sizePoolLaser);
     }
 
-    public Jewel GetJewel(JewelSimple jewelSimple, int count)
+    public Jewel GetJewel(JewelSimple jewelSimple, int count, int group)
     {
         Jewel jewel = _poolJewel.GetObject(_container);
-        jewel.Setup(jewelSimple, count);
+        jewel.Setup(jewelSimple, count, group);
         return jewel;
     }
 
@@ -47,10 +47,10 @@ public class ActorsPool : MonoBehaviour
         return jewel;
     }
 
-    public Laser GetLaser(LaserSimple laserSimple)
+    public Laser GetLaser(LaserSimple laserSimple, int maxCountRay)
     {
         Laser laser = _poolLaser.GetObject(_container);
-        laser.Setup(laserSimple);
+        laser.Setup(laserSimple, maxCountRay);
         return laser;
     }
 

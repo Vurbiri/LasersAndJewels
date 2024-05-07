@@ -1,6 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 
 
 [RequireComponent(typeof(ActorsPool))]
@@ -8,38 +8,42 @@ public class GameArea : MonoBehaviour
 {
     [SerializeField] private Vector2Int _size = new(10, 9);
 
-    private ActorsPool _actorsPool;
-    private LevelOne _levelOne;
-    private LevelTwo _levelTwo;
+    private ALevel _level;
 
-    private int _countJewel = 55;
+    private int _countJewel = 40, _maxDistance = 3;
 
     private void Awake()
     {
-        _actorsPool = GetComponent<ActorsPool>();
-        _actorsPool.Initialize(OnSelected);
+        ActorsPool actorsPool = GetComponent<ActorsPool>();
+        actorsPool.Initialize(OnSelected);
 
-        _levelOne = new(_size, _actorsPool);
-        _levelTwo = new(_size, _actorsPool);
+        //_level = new LevelOne(_size, actorsPool);
+        _level = new LevelTwo(_size, actorsPool);
     }
 
     private void Start()
     {
-        _levelTwo.Create(15, 1, 15, 2, 50, 4);
-        _levelTwo.Run();
+        int count = _countJewel;
+        while (!_level.Create(count--, _maxDistance));
 
-        //while (!_levelOne.Create(_countJewel--, 1, 4));
+        Debug.Log(count);
 
-        //_levelOne.Run();
-
+        _level.Run();
     }
 
     private void OnSelected()
     {
-        //if (_levelOne.Check())
-            Debug.Log("-=/ Level complete \\=-");
+        if (_level.CheckChain())
+            StartCoroutine(GameOver_Coroutine());
     }
 
+    private IEnumerator GameOver_Coroutine()
+    {
+        Debug.Log("-=/ Level complete \\=-");
+        yield return new WaitForSecondsRealtime(2f);
+        _level.Clear();
+        Start();
+    }
     
 
 #if UNITY_EDITOR

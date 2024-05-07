@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class JewelSimple 
 {
-    public byte IdType => _idType;
+    public int IdType => _idType;
     public Vector2Int Index => _index;
     public int X => _index.x;
     public int Y => _index.y;
 
-    private readonly byte _idType;
-    private Vector2Int _index;
+    private readonly int _idType;
+    private readonly Vector2Int _index;
 
-    public JewelSimple(Vector2Int index, byte idType)
+    public JewelSimple(Vector2Int index, int idType)
     {
         _index = index;
         _idType = idType;

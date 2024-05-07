@@ -4,10 +4,10 @@ public class JewelEnd : AJewel<JewelEnd>
 {
     public void Setup(JewelSimple jewelSimple) => BaseSetup(jewelSimple);
 
-    public override void TurnOn(bool isLevelComplete)
+    protected override void On(bool isLevelComplete)
     {
         if (!isLevelComplete) return;
 
-        TurnOn();
+        BaseOn();
     }
 }

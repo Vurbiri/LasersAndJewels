@@ -1,85 +1,93 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ALevelGenerator<T>
+public abstract class ALevelGenerator
 {
     protected Vector2Int _size;
 
-    protected T[,] _area;
+    protected bool[,] _area;
     protected List<JewelSimple> _jewels;
     protected LaserSimple _laser;
-    protected byte _type;
-    protected int _maxDistance = 8;
+    protected int _type, _count, _maxDistance = 8;
+    protected Vector2Int _current, _excluding;
 
     public ALevelGenerator(Vector2Int size)
     {
         _size = size;
     }
 
-    protected bool GenerateOne(int count, byte type)
+    protected void SetupOne(int count)
     {
-        _type = type;
+        _count = count;
         _jewels = new(count);
 
-        Vector2Int current = URandom.Vector2Int(_size), excluding = Direction2D.Random;
+        _current = URandom.Vector2Int(_size);
+        _excluding = Direction2D.Random;
 
-        Add(current);
-        _laser = new(current, -excluding, type);
+        Add();
+        _laser = new(_current, -_excluding, _type);
         while (IsEmpty(_laser.Move()));
+    }
 
+    protected bool GenerateOne()
+    {
         Vector2Int[] directions;
         bool result = false;
         int error = 0;
-        while (_jewels.Count < count && error < count)
+        while (_jewels.Count < _count && error < _count)
         {
             result = false;
 
-            directions = Direction2D.Excluding(excluding);
+            directions = Direction2D.Excluding(_excluding);
             foreach (byte index in URandom.ThreeIndexes)
-                if (result = TryAddOne(directions[index], out current))
+            {
+                if (result = TryAddOne(directions[index]))
                     break;
+            }
 
             if (!result)
             {
                 error++;
-                for (int i = 0; i <= Mathf.Min(error >> 4, _jewels.Count - 2); i++)
+                for (int i = 0; i <= error >> 4; i++)
                     RemoveLast();
             }
             else
             {
-                Add(current);
+                Add();
             }
 
-            excluding = _jewels[^2] - _jewels[^1];
+            if (_jewels.Count < 2) return false;
+
+            _excluding = _jewels[^2] - _jewels[^1];
         }
 
         Debug.Log(error);
         return result;
     }
 
-    protected virtual bool TryAddOne(Vector2Int direction, out Vector2Int current)
+    protected virtual bool TryAddOne(Vector2Int direction)
     {
-        current = _jewels[^1].Index;
-        Vector2Int start = current + direction;
+        _current = _jewels[^1].Index;
+        Vector2Int start = _current + direction;
         if (!IsEmpty(start)) return false;
 
         Vector2Int end = start;
         int steps = _maxDistance;
         while (IsEmpty(end += direction) && --steps > 0) ;
 
-        if (IsNotBetween(current = URandom.Vector2Int(start, end)))
+        if (IsNotBetween(_current = URandom.Vector2Int(start, end)))
             return true;
 
-        start = current;
+        start = _current;
 
-        while (IsEmpty(current -= direction))
-            if (IsNotBetween(current))
+        while (IsEmpty(_current -= direction))
+            if (IsNotBetween(_current))
                 return true;
 
-        current = start;
+        _current = start;
 
-        while (IsEmpty(current += direction))
-            if (IsNotBetween(current))
+        while (IsEmpty(_current += direction))
+            if (IsNotBetween(_current))
                 return true;
 
         return false;
@@ -97,12 +105,21 @@ public abstract class ALevelGenerator<T>
             a = b; b = _jewels[i].Index;
         }
 
-        return true;
+        return !position.IsBetween(a, b);
     }
 
-    protected abstract void Add(Vector2Int index);
-    protected abstract void RemoveLast();
+    protected virtual void Add()
+    {
+        _jewels.Add(new(_current, _type));
+        _area[_current.x, _current.y] = true;
+    }
 
-    protected abstract bool IsEmpty(Vector2Int index);
-    protected bool IsCorrect(Vector2Int index) => index.x >= 0 && index.x < _size.x && index.y >= 0 && index.y < _size.y;
+    protected virtual void RemoveLast()
+    {
+        Vector2Int index = _jewels.Pop().Index;
+        _area[index.x, index.y] = false;
+    }
+
+    protected virtual bool IsEmpty(Vector2Int index) => _area.IsCorrect(index) && !_area[index.x, index.y];
+    protected bool IsCorrect(Vector2Int index) => _area.IsCorrect(index);
 }

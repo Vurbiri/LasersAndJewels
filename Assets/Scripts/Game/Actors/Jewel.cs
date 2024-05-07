@@ -32,12 +32,12 @@ public class Jewel : AJewel<Jewel>, IMouseClick
         base.Initialize();
     }
 
-    public void Setup(JewelSimple jewelSimple, int count)
+    public void Setup(JewelSimple jewelSimple, int count, int group)
     {
         BaseSetup(jewelSimple);
 
         _textCount.text = count.ToString();
-        _textCount.color = _colorOn.Brightness(_brightnessParticle);
+        _textCount.color = _colors[group].Brightness(_brightnessParticle);
     }
 
     public override void Run()
@@ -47,11 +47,11 @@ public class Jewel : AJewel<Jewel>, IMouseClick
         IsInteractable = true;
     }
 
-    public override void TurnOn(bool isLevelComplete)
+    protected override void On(bool isLevelComplete)
     {
         if (isLevelComplete) IsInteractable = false;
 
-        TurnOn();
+        BaseOn();
     }
 
     private void Turn(TurnData turnData) 

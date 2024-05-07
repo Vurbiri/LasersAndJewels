@@ -10,9 +10,8 @@ public class CheatController : MonoBehaviour, IPointerDownHandler
 
         if (eventData.clickCount == CLOCK_COUNT_MAX)
         {
-            Card.IsCheat = !Card.IsCheat;
             SoundSingleton.Instance.PlaySelect();
-            Message.Banner("Cheat: " + (Card.IsCheat ? "ON" : "OFF"), MessageType.FatalError, 2f);
+            //Message.Banner("Cheat: " + (Card.IsCheat ? "ON" : "OFF"), MessageType.FatalError, 2f);
         }
     }
 }

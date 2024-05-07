@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class LaserSimple
 {
-    public byte IdType => _idType;
+    public int IdType => _idType;
     public Vector2Int Index => _index;
     public Vector2Int Orientation => _orientation;
 
-    private readonly byte _idType;
+    private readonly int _idType;
     private Vector2Int _index;
-    private Vector2Int _orientation;
+    private readonly Vector2Int _orientation;
 
-    public LaserSimple(Vector2Int index, Vector2Int orientation, byte idType)
+    public LaserSimple(Vector2Int index, Vector2Int orientation, int idType)
     {
         _index = index;
         _orientation = orientation;
