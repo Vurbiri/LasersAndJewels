@@ -20,7 +20,7 @@ public class LevelOne : ALevel
     public override bool Create(int count, int maxDistance)
     {
         int type = Random.Range(0, 3);
-        PositionsChainSimple positionsChain = Generate();
+        PositionsChainOne positionsChain = Generate();
         if (positionsChain == null) return false;
 
         _count = count + 1;
@@ -38,10 +38,10 @@ public class LevelOne : ALevel
 
         #region Local functions
         //======================
-        PositionsChainSimple Generate()
+        PositionsChainOne Generate()
         {
-            PositionsChainSimple chain;
-            int attempts = 0, maxAttempts = count << 3;
+            PositionsChainOne chain;
+            int attempts = 0, maxAttempts = count << SHIFT_ATTEMPS;
 
             do chain = _generator.Generate(count, type, maxDistance);
             while (++attempts < maxAttempts && chain == null);
@@ -60,7 +60,7 @@ public class LevelOne : ALevel
         IJewel current = _jewels[0];
         Vector2Int index = current.Index, direction = current.Orientation, directionOld = _laserOne.Orientation;
 
-        while (Visited(current) && direction != Vector2Int.zero)
+        while (Visited(current) && !current.IsEnd)
         {
             while (IsEmpty(index += direction)) ;
 
@@ -73,7 +73,7 @@ public class LevelOne : ALevel
 
         bool isLevelComplete = count == _count;
 
-        if (direction != Vector2Int.zero && directionOld != -direction)
+        if (!current.IsEnd && directionOld != -direction)
             _laserOne.PositionsRay[count++] = index.ToVector3();
 
         foreach (IJewel jewel in _jewels)

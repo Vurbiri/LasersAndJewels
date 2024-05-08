@@ -4969,5 +4969,5 @@ MonoBehaviour:
   _brightnessParticle: 1.2
   _alfaOn: 0.95
   _spriteOn: {fileID: 21300000, guid: 941ffbdfcf5c4ad42804e6404888ac5a, type: 3}
-  _alfaOff: 0.6
+  _alfaOff: 0.7
   _spriteOff: {fileID: 21300000, guid: 5ddd8bc1c9d94b64090cf6bfd414f76d, type: 3}

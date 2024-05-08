@@ -17,6 +17,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
 
     public int IdType => _idType;
     public bool IsVisited { get => _isVisited; set => _isVisited = value; }
+    public abstract bool IsEnd { get; }
     public Vector2Int Index => _index;
     public Vector2Int Orientation { get; protected set; } = Vector2Int.zero;
     public Vector3 LocalPosition => _thisTransform.localPosition;

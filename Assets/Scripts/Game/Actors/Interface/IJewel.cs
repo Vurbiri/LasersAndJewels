@@ -4,6 +4,7 @@ public interface IJewel
 {
     public int IdType { get; }
     public bool IsVisited { get; set; }
+    public bool IsEnd { get; }
     public Vector2Int Index { get; }
     public Vector2Int Orientation { get; }
     public Vector3 LocalPosition { get; }

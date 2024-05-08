@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,49 +7,56 @@ public abstract class ALevelGenerator
     protected Vector2Int _size;
 
     protected bool[,] _area;
-    protected List<JewelSimple> _jewels;
-    protected LaserSimple _laser;
-    protected int _type, _count, _maxDistance = 8;
-    protected Vector2Int _current, _excluding;
+    protected List<JewelSimple> _jewelsCurrent;
+    protected LaserSimple _laserCurrent;
+    protected int _typeCurrent, _countCurrent, _maxDistance = 8;
+    protected Vector2Int _indexCurrent, _excluding;
+
+    protected Func<bool> funcIsNotBetween;
+
+    protected const int SHIFT_ERROR = 3;
+    protected const int COUNT_ERROR = 35;
 
     public ALevelGenerator(Vector2Int size)
     {
         _size = size;
+        funcIsNotBetween = IsNotBetweenOne;
     }
 
     protected void SetupOne(int count)
     {
-        _count = count;
-        _jewels = new(count);
+        _countCurrent = count;
+        _jewelsCurrent = new(count);
 
-        _current = URandom.Vector2Int(_size);
+        _indexCurrent = URandom.Vector2Int(_size);
         _excluding = Direction2D.Random;
 
         Add();
-        _laser = new(_current, -_excluding, _type);
-        while (IsEmpty(_laser.Move()));
+        _laserCurrent = new(_indexCurrent, -_excluding, _typeCurrent);
+        while (IsEmpty(_laserCurrent.Move()));
     }
 
-    protected bool GenerateOne()
+    protected bool GenerateBase()
     {
         Vector2Int[] directions;
         bool result = false;
-        int error = 0;
-        while (_jewels.Count < _count && error < _count)
+        int error = 0, count;
+        while (_jewelsCurrent.Count < _countCurrent && error < COUNT_ERROR)
         {
             result = false;
 
             directions = Direction2D.Excluding(_excluding);
             foreach (byte index in URandom.ThreeIndexes)
             {
-                if (result = TryAddOne(directions[index]))
+                if (result = TryAdd(directions[index]))
                     break;
             }
 
             if (!result)
             {
                 error++;
-                for (int i = 0; i <= error >> 4; i++)
+                count = Mathf.Min((error >> SHIFT_ERROR) + 1, _jewelsCurrent.Count);
+                for (int i = 0; i < count; i++)
                     RemoveLast();
             }
             else
@@ -56,70 +64,74 @@ public abstract class ALevelGenerator
                 Add();
             }
 
-            if (_jewels.Count < 2) return false;
+            if (_jewelsCurrent.Count < 2) return false;
 
-            _excluding = _jewels[^2] - _jewels[^1];
+            _excluding = _jewelsCurrent[^2] - _jewelsCurrent[^1];
         }
 
-        Debug.Log(error);
         return result;
     }
 
-    protected virtual bool TryAddOne(Vector2Int direction)
+    protected bool TryAdd(Vector2Int direction)
     {
-        _current = _jewels[^1].Index;
-        Vector2Int start = _current + direction;
-        if (!IsEmpty(start)) return false;
+        _indexCurrent = _jewelsCurrent[^1].Index;
+        Vector2Int start = _indexCurrent + direction;
+        if (IsEmpty(start)) return false;
 
         Vector2Int end = start;
         int steps = _maxDistance;
         while (IsEmpty(end += direction) && --steps > 0) ;
 
-        if (IsNotBetween(_current = URandom.Vector2Int(start, end)))
+        _indexCurrent = URandom.Vector2Int(start, end);
+        if (funcIsNotBetween())
             return true;
 
-        start = _current;
+        start = _indexCurrent;
+        end = _jewelsCurrent[^1].Index;
 
-        while (IsEmpty(_current -= direction))
-            if (IsNotBetween(_current))
+        while ((_indexCurrent -= direction) != end)
+            if (funcIsNotBetween())
                 return true;
 
-        _current = start;
+        _indexCurrent = start;
 
-        while (IsEmpty(_current += direction))
-            if (IsNotBetween(_current))
+        while (IsEmpty(_indexCurrent += direction))
+            if (funcIsNotBetween())
                 return true;
 
         return false;
     }
 
-    protected virtual bool IsNotBetween(Vector2Int position)
-    {
-        Vector2Int a = _laser.Index, b = _jewels[0].Index;
 
-        for (int i = 1; i < _jewels.Count; i++)
+    protected bool IsNotBetweenOne() => IsNotBetween(_laserCurrent, _jewelsCurrent);
+
+    protected bool IsNotBetween(LaserSimple laser, List<JewelSimple> jewels)
+    {
+        Vector2Int a = laser.Index, b = jewels[0].Index;
+
+        for (int i = 1; i < jewels.Count; i++)
         {
-            if (position.IsBetween(a, b))
+            if (_indexCurrent.IsBetween(a, b))
                 return false;
 
-            a = b; b = _jewels[i].Index;
+            a = b; b = jewels[i].Index;
         }
 
-        return !position.IsBetween(a, b);
+        return !_indexCurrent.IsBetween(a, b);
     }
 
     protected virtual void Add()
     {
-        _jewels.Add(new(_current, _type));
-        _area[_current.x, _current.y] = true;
+        _jewelsCurrent.Add(new(_indexCurrent, _typeCurrent));
+        _area[_indexCurrent.x, _indexCurrent.y] = true;
     }
 
-    protected virtual void RemoveLast()
+    protected void RemoveLast()
     {
-        Vector2Int index = _jewels.Pop().Index;
+        Vector2Int index = _jewelsCurrent.Pop().Index;
         _area[index.x, index.y] = false;
     }
 
-    protected virtual bool IsEmpty(Vector2Int index) => _area.IsCorrect(index) && !_area[index.x, index.y];
+    protected bool IsEmpty(Vector2Int index) => _area.IsCorrect(index) && !_area[index.x, index.y];
     protected bool IsCorrect(Vector2Int index) => _area.IsCorrect(index);
 }

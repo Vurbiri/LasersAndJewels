@@ -9,6 +9,9 @@ public class LevelTwo : ALevel
 
     public override LevelType Type => LevelType.LevelTwo;
 
+    protected const int SHIFT_RANDOM = 3;
+    //protected const int TYPE_ONE = 1, TYPE_TWO = 2;
+
     public LevelTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new(size);
@@ -23,26 +26,26 @@ public class LevelTwo : ALevel
     public override bool Create(int count, int maxDistance)
     {
         _count = count;
-        int countOne = count >> 1 - Random.Range(0, (count >> 3) + 1);
+        int countOne = (count >> 1) - Random.Range(0, (count >> SHIFT_RANDOM) + 1);
         int countTwo = count - countOne;
         int typeOne = 1, typeTwo = 2;
 
-        PositionsChainSimple[] positionsChain = Generate();
+        PositionsChainTwo positionsChain = Generate();
         if (positionsChain == null) return false;
 
         _jewels = new(count);
 
-        Spawn(positionsChain[0], ref _laserOne, ref _startOne, typeOne);
-        Spawn(positionsChain[1], ref _laserTwo, ref _startTwo, typeTwo);
+        Spawn(positionsChain.One, ref _laserOne, ref _startOne, typeOne);
+        Spawn(positionsChain.Two, ref _laserTwo, ref _startTwo, typeTwo);
 
         return true;
 
         #region Local functions
         //======================
-        PositionsChainSimple[] Generate()
+        PositionsChainTwo Generate()
         {
-            PositionsChainSimple[] chain;
-            int attempts = 0, maxAttempts = count << 3;
+            PositionsChainTwo chain;
+            int attempts = 0, maxAttempts = count << SHIFT_ATTEMPS;
 
             do chain = _generator.Generate(countOne, typeOne, countTwo, typeTwo, Random.Range(40, 61), maxDistance);
             while (++attempts < maxAttempts && chain == null);
@@ -52,7 +55,7 @@ public class LevelTwo : ALevel
             return chain;
         }
         //======================
-        void Spawn(PositionsChainSimple chain, ref Laser laser, ref IJewel start, int group)
+        void Spawn(PositionsChainOne chain, ref Laser laser, ref IJewel start, int group)
         {
             laser = _actorsPool.GetLaser(chain.Laser, _count);
             Add(start = _actorsPool.GetJewel(chain.Jewels[0], 1, group));
@@ -79,7 +82,7 @@ public class LevelTwo : ALevel
 
         Vector2Int index = current.Index, direction = current.Orientation, directionOld = laser.Orientation;
 
-        while (Visited(current) && direction != Vector2Int.zero)
+        while (Visited(current) && !current.IsEnd)
         {
             while (IsEmpty(index += direction)) ;
 
@@ -92,7 +95,7 @@ public class LevelTwo : ALevel
 
         int countVisited = count - 1;
 
-        if ((direction != Vector2Int.zero && directionOld != -direction) || current.IdType == errorType)
+        if (current.IdType == errorType || (!current.IsEnd && directionOld != -direction))
             laser.PositionsRay[count++] = index.ToVector3();
 
         laser.SetRayPositions(count);
@@ -108,13 +111,8 @@ public class LevelTwo : ALevel
             laser.PositionsRay[count++] = jewel.LocalPosition;
             return jewel.IsVisited = true;
         }
-        //bool IsMove(Vector2Int index)
-        //{
-        //    return IsCorrect(index) && (_area[index.x, index.y] == null || _area[index.x, index.y].IdType == errorType);
-        //}
         #endregion
     }
-
 
     public override void Clear()
     {

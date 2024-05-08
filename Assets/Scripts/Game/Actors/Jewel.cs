@@ -13,6 +13,7 @@ public class Jewel : AJewel<Jewel>, IMouseClick
 
     private readonly LoopArray<TurnData> _turnData = new(4);
 
+    public override bool IsEnd => false;
     public virtual bool IsInteractable { set => _collider.enabled = value; }
 
     public event Action EventSelected;

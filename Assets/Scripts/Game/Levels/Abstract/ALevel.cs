@@ -15,6 +15,8 @@ public abstract class ALevel
 
     public abstract LevelType Type { get; }
 
+    protected const int SHIFT_ATTEMPS = 3;
+
     public ALevel(Vector2Int size, ActorsPool actorsPool)
     {
         _size = size;

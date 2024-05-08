@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 
-public class PositionsChainSimple
+public class PositionsChainOne
 {
     public LaserSimple Laser { get; }
     public List<JewelSimple> Jewels { get; }
     public JewelSimple End { get; }
     public int Count { get; }
 
-    public PositionsChainSimple(LaserSimple laser, List<JewelSimple> positions)
+    public PositionsChainOne(LaserSimple laser, List<JewelSimple> positions)
     {
         Laser = laser;
         End = positions.Pop();
