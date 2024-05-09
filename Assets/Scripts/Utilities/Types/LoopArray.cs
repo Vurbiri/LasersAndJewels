@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 public class LoopArray<T>
 {
@@ -35,6 +36,15 @@ public class LoopArray<T>
             _capacity = capacity;
 
         _array = new T[_capacity];
+    }
+
+    public LoopArray(T[] array)
+    {
+        _capacity = _count = array.Length;
+        _array = new T[_capacity];
+
+        for(int i = 0; i < _count; i++)
+            _array[i] = array[i];
     }
 
     public void Add(T item)

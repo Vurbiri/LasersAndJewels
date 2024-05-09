@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public abstract class ALevelGenerator
 {
-    protected Vector2Int _size;
+    protected readonly Vector2Int _size;
 
     protected bool[,] _area;
-    protected List<JewelSimple> _jewelsCurrent;
+    protected List<Vector2Int> _jewelsCurrent;
     protected LaserSimple _laserCurrent;
-    protected int _typeCurrent, _countCurrent, _maxDistance = 8;
+    protected int _countCurrent, _maxDistance = 8;
     protected Vector2Int _indexCurrent, _excluding;
 
     protected Func<bool> funcIsNotBetween;
@@ -23,46 +24,73 @@ public abstract class ALevelGenerator
         funcIsNotBetween = IsNotBetweenOne;
     }
 
-    protected void SetupOne(int count)
+    protected bool GenerateBase(int count, int maxDistance)
     {
+        _area = new bool[_size.x, _size.y];
+        _maxDistance = maxDistance;
+
         _countCurrent = count;
         _jewelsCurrent = new(count);
 
-        _indexCurrent = URandom.Vector2Int(_size);
-        _excluding = Direction2D.Random;
+        int halfX = _size.x >> 1, halfY = _size.y >> 1;
+        Vector2Int directionX, directionY;
+
+        _indexCurrent = new(SetX(), SetY());
+        _excluding = URandom.IsTrue() ? directionX : directionY;
 
         Add();
-        _laserCurrent = new(_indexCurrent, -_excluding, _typeCurrent);
+        _laserCurrent = new(_indexCurrent, -_excluding);
         while (IsEmpty(_laserCurrent.Move()));
+
+        return GenerateChain();
+
+        #region Local functions
+        //======================
+        int SetX()
+        {
+            if (URandom.IsTrue())
+            {
+                directionX = Vector2Int.left;
+                return Random.Range(0, halfX);
+            }
+            else
+            {
+                directionX = Vector2Int.right;
+                return Random.Range(_size.x - halfX, _size.x);
+            }
+        }
+        int SetY()
+        {
+            if (URandom.IsTrue())
+            {
+                directionY = Vector2Int.down;
+                return Random.Range(0, halfY);
+            }
+            else
+            {
+                directionY = Vector2Int.up;
+                return Random.Range(_size.y - halfY, _size.y);
+            }
+        }
+        #endregion
     }
 
-    protected bool GenerateBase()
+    protected bool GenerateChain()
     {
-        Vector2Int[] directions;
         bool result = false;
         int error = 0, count;
         while (_jewelsCurrent.Count < _countCurrent && error < COUNT_ERROR)
         {
-            result = false;
-
-            directions = Direction2D.Excluding(_excluding);
-            foreach (byte index in URandom.ThreeIndexes)
-            {
-                if (result = TryAdd(directions[index]))
-                    break;
-            }
-
-            if (!result)
-            {
-                error++;
-                count = Mathf.Min((error >> SHIFT_ERROR) + 1, _jewelsCurrent.Count);
-                for (int i = 0; i < count; i++)
-                    RemoveLast();
-            }
-            else
+            if (result = TryAdd())
             {
                 Add();
+                continue;
             }
+
+            error++;
+            count = Mathf.Min((error >> SHIFT_ERROR) + 1, _jewelsCurrent.Count);
+            for (int i = 0; i < count; i++)
+                RemoveLast();
 
             if (_jewelsCurrent.Count < 2) return false;
 
@@ -72,22 +100,35 @@ public abstract class ALevelGenerator
         return result;
     }
 
-    protected bool TryAdd(Vector2Int direction)
+    protected bool TryAdd()
     {
-        _indexCurrent = _jewelsCurrent[^1].Index;
-        Vector2Int start = _indexCurrent + direction;
-        if (IsEmpty(start)) return false;
+        Vector2Int current = _jewelsCurrent[^1];
+        foreach (Vector2Int direction in Direction2D.ExcludingRange(_excluding))
+        {
+            if (CheckAdd(current, direction))
+            {
+                _excluding = direction;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected bool CheckAdd(Vector2Int start, Vector2Int direction)
+    {
+        if (!IsEmpty(start += direction)) return false;
 
         Vector2Int end = start;
         int steps = _maxDistance;
-        while (IsEmpty(end += direction) && --steps > 0) ;
+        while (IsEmpty(end += direction) && --steps > 0);
 
         _indexCurrent = URandom.Vector2Int(start, end);
         if (funcIsNotBetween())
             return true;
 
         start = _indexCurrent;
-        end = _jewelsCurrent[^1].Index;
+        end = _jewelsCurrent[^1];
 
         while ((_indexCurrent -= direction) != end)
             if (funcIsNotBetween())
@@ -102,19 +143,18 @@ public abstract class ALevelGenerator
         return false;
     }
 
-
     protected bool IsNotBetweenOne() => IsNotBetween(_laserCurrent, _jewelsCurrent);
 
-    protected bool IsNotBetween(LaserSimple laser, List<JewelSimple> jewels)
+    protected bool IsNotBetween(LaserSimple laser, List<Vector2Int> jewels)
     {
-        Vector2Int a = laser.Index, b = jewels[0].Index;
+        Vector2Int a = laser.Index, b = jewels[0];
 
         for (int i = 1; i < jewels.Count; i++)
         {
             if (_indexCurrent.IsBetween(a, b))
                 return false;
 
-            a = b; b = jewels[i].Index;
+            a = b; b = jewels[i];
         }
 
         return !_indexCurrent.IsBetween(a, b);
@@ -122,16 +162,16 @@ public abstract class ALevelGenerator
 
     protected virtual void Add()
     {
-        _jewelsCurrent.Add(new(_indexCurrent, _typeCurrent));
+        _jewelsCurrent.Add(_indexCurrent);
         _area[_indexCurrent.x, _indexCurrent.y] = true;
     }
 
     protected void RemoveLast()
     {
-        Vector2Int index = _jewelsCurrent.Pop().Index;
+        Vector2Int index = _jewelsCurrent.Pop();
         _area[index.x, index.y] = false;
     }
 
-    protected bool IsEmpty(Vector2Int index) => _area.IsCorrect(index) && !_area[index.x, index.y];
-    protected bool IsCorrect(Vector2Int index) => _area.IsCorrect(index);
+    protected bool IsEmpty(Vector2Int index) => index.x >= 0 && index.x < _size.x && index.y >= 0 && index.y < _size.y && !_area[index.x, index.y];
+    protected bool IsCorrect(Vector2Int index) => index.x >= 0 && index.x < _size.x && index.y >= 0 && index.y < _size.y;
 }

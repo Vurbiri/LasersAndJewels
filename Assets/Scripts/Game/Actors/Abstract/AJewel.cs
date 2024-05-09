@@ -20,13 +20,13 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
     public abstract bool IsEnd { get; }
     public Vector2Int Index => _index;
     public Vector2Int Orientation { get; protected set; } = Vector2Int.zero;
-    public Vector3 LocalPosition => _thisTransform.localPosition;
+    public virtual Vector3 LocalPosition => _thisTransform.localPosition;
 
     ParticleSystem.MainModule _mainParticle;
 
-    private int _idType;
-    private Vector2Int _index;
-    private bool _isOn = true, _isVisited = false;
+    protected int _idType;
+    protected Vector2Int _index;
+    protected bool _isOn = true, _isVisited = false;
     protected Color _colorOn = Color.white;
     protected Color _colorOff = Color.gray;
 
@@ -37,10 +37,10 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         base.Initialize();
     }
 
-    protected void BaseSetup(JewelSimple jewelSimple)
+    protected void BaseSetup(Vector2Int index, int idType)
     {
-        _idType = jewelSimple.IdType;
-        _index = jewelSimple.Index;
+        _idType = idType;
+        _index = index;
         
         Color color = _colors[_idType];
         _mainParticle.startColor = color.Brightness(_brightnessParticle);

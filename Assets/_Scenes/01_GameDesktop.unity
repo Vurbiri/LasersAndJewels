@@ -1071,7 +1071,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: -15
   m_Sprite: {fileID: 21300000, guid: 580f8ecce8d0ba24ca40c11681413b1f, type: 3}
-  m_Color: {r: 1, g: 1, b: 0.78431374, a: 1}
+  m_Color: {r: 0.07450981, g: 0.10588236, b: 0.2509804, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
@@ -6362,8 +6362,9 @@ MonoBehaviour:
   _sizePoolJewel: 200
   _prefabJewelEnd: {fileID: 1358731368976023665, guid: 60aca0fd2423f2840bbebdb600902bf4, type: 3}
   _sizePoolJewelEnd: 2
-  _prefabLaser: {fileID: 1938168507272845325, guid: 1dd38fa8c262cb04c9c25a38372e22e4, type: 3}
+  _prefabLaser: {fileID: 8716943328027145716, guid: 1dd38fa8c262cb04c9c25a38372e22e4, type: 3}
   _sizePoolLaser: 2
+  _prefabJewelTwoToOne: {fileID: 5166837031979411960, guid: 5a5ebc376dbd20c459bb1507eeb11e9f, type: 3}
 --- !u!114 &7671191719196118504
 MonoBehaviour:
   m_ObjectHideFlags: 0

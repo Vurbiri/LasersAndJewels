@@ -16,6 +16,7 @@ public abstract class ALevel
     public abstract LevelType Type { get; }
 
     protected const int SHIFT_ATTEMPS = 3;
+    protected const int TYPE_ONE = 1, TYPE_TWO = 2, TYPE_THREE = 3;
 
     public ALevel(Vector2Int size, ActorsPool actorsPool)
     {
@@ -33,8 +34,9 @@ public abstract class ALevel
 
     public abstract bool Create(int count, int maxDistance);
 
-    public void Run()
+    public virtual void Run()
     {
+        _laserOne.Run();
         _jewels.ForEach((j) => j.Run());
         CheckChain();
     }

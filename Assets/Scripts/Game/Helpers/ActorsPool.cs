@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class ActorsPool : MonoBehaviour
 {
@@ -16,42 +17,48 @@ public class ActorsPool : MonoBehaviour
     [Space]
     [SerializeField] private Laser _prefabLaser;
     [SerializeField] private int _sizePoolLaser = 2;
-    
+    [Space]
+    [SerializeField] private JewelTwoToOne _prefabJewelTwoToOne;
 
     private PoolJewels _poolJewel;
-    //private PoolJewelsSimple _poolJewelSimple;
     private Pool<JewelEnd> _poolJewelEnd;
     private Pool<Laser> _poolLaser;
+    private PoolSimple<JewelTwoToOne> _poolJewelTwoToOne;
 
     public void Initialize(Action onSelected)
     {
         _poolJewel = new(_prefabJewel, _repository, _sizePoolJewel, onSelected);
-        //_poolJewelSimple = new(_sizePoolJewel);
         _poolJewelEnd = new(_prefabJewelEnd, _repository, _sizePoolJewelEnd);
         _poolLaser = new(_prefabLaser, _repository, _sizePoolLaser);
+        _poolJewelTwoToOne = new(_prefabJewelTwoToOne, _repository, onSelected);
     }
 
-    public Jewel GetJewel(JewelSimple jewelSimple, int count, int group)
+    public Jewel GetJewel(Vector2Int index, int idType, int count, int group)
     {
         Jewel jewel = _poolJewel.GetObject(_container);
-        jewel.Setup(jewelSimple, count, group);
+        jewel.Setup(index, idType, count, group);
         return jewel;
     }
 
-    //public JewelSimple GetJewelsSimple(Vector2Int index, byte idType) => _poolJewelSimple.GetJewelsSimple(index, idType);
-
-    public JewelEnd GetJewelEnd(JewelSimple jewelSimple)
+    public JewelEnd GetJewelEnd(Vector2Int index, int idType)
     {
         JewelEnd jewel = _poolJewelEnd.GetObject(_container);
-        jewel.Setup(jewelSimple);
+        jewel.Setup(index, idType);
         return jewel;
     }
 
-    public Laser GetLaser(LaserSimple laserSimple, int maxCountRay)
+    public Laser GetLaser(LaserSimple laserSimple, int idType, int maxCountRay)
     {
         Laser laser = _poolLaser.GetObject(_container);
-        laser.Setup(laserSimple, maxCountRay);
+        laser.Setup(laserSimple, idType, maxCountRay);
         return laser;
+    }
+
+    public JewelTwoToOne GetJewelTwoToOne(Vector2Int index, int idType, int maxCountRay)
+    {
+        JewelTwoToOne jewel = _poolJewelTwoToOne.GetObject(_container);
+        jewel.Setup(index, idType, maxCountRay);
+        return jewel;
     }
 
     #region Nested Classe
@@ -75,36 +82,33 @@ public class ActorsPool : MonoBehaviour
         }
     }
     //***********************************
-    //private class PoolJewelsSimple
-    //{
-    //    private readonly Stack<JewelSimple> _pool;
+    private class PoolSimple<T> where T : AJewelInteractable<T>
+    {
+        private readonly T _gameObject;
+        private readonly Transform _repository;
 
-    //    public PoolJewelsSimple(int size)
-    //    {
-    //        _pool = new(size);
-    //        for (int i = 0; i < size; i++)
-    //            _pool.Push(CreateObject());
-    //    }
+        public PoolSimple(T prefab, Transform repository, Action onSelected) 
+        {
+            _repository = repository;
 
-    //    public JewelSimple GetJewelsSimple(Vector2Int index, byte idType)
-    //    {
-    //        JewelSimple JewelsSimple;
-    //        if (_pool.Count == 0)
-    //            JewelsSimple = CreateObject();
-    //        else
-    //            JewelsSimple = _pool.Pop();
+            _gameObject = Instantiate(prefab);
+            _gameObject.Initialize();
+            _gameObject.EventDeactivate += OnDeactivate;
+            _gameObject.EventSelected += onSelected;
+            _gameObject.SetParent(_repository);
 
-    //        JewelsSimple.Setup(index, idType);
+        }
 
-    //        return JewelsSimple;
-    //    }
+        public T GetObject(Transform parent)
+        {
+            _gameObject.SetParent(parent);
+            return _gameObject;
+        }
 
-    //    private JewelSimple CreateObject()
-    //    {
-    //        JewelSimple jewelsSimple = new();
-    //        jewelsSimple.EventDeactivate += (j) => _pool.Push(j);
-    //        return jewelsSimple;
-    //    }
-    //}
+        protected void OnDeactivate(T poolObject)
+        {
+            poolObject.SetParent(_repository);
+        }
+    }
     #endregion
 }

@@ -1,40 +1,53 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelTwo : ALevel
+public class LevelTwoToOne : ALevel
 {
-    private readonly LevelGeneratorTwo _generator;
+    private readonly LevelGeneratorTwoToOne _generator;
 
     private Laser _laserTwo;
-    private IJewel _startOne, _startTwo;
+    private IJewel _startOne, _startTwo, _jewelTwoToOne;
 
-    public override LevelType Type => LevelType.LevelTwo;
+    public override LevelType Type => LevelType.LevelTwoToOne;
 
-    protected const int SHIFT_RANDOM = 3, CHANCE = 50;
+    protected const int SHIFT_RANDOM = 4, CHANCE = 100;
 
-    public LevelTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
+    public LevelTwoToOne(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new(size);
     }
 
-    //public override void Initialize(Vector2Int size, ActorsPool actorsPool)
-    //{
-    //    base.Initialize(size, actorsPool);
-    //    _generator = new(size);
-    //}
-
     public override bool Create(int count, int maxDistance)
     {
         _count = count;
-        int countOne = (count >> 1) - Random.Range(0, (count >> SHIFT_RANDOM) + 1);
-        int countTwo = count - countOne;
+        int countTwo =  (count / 3) - Random.Range(0, (count >> SHIFT_RANDOM) + 1);
+        int countOne = count - countTwo;
+        
 
         PositionsChainTwo positionsChain = Generate();
         if (positionsChain == null) return false;
 
         _jewels = new(count);
 
-        Spawn(positionsChain.One, ref _laserOne, ref _startOne, TYPE_ONE);
-        Spawn(positionsChain.Two, ref _laserTwo, ref _startTwo, TYPE_TWO);
+        PositionsChainOne chain = positionsChain.One;
+
+        _laserOne = _actorsPool.GetLaser(chain.Laser, TYPE_ONE, _count);
+        Add(_startOne = _actorsPool.GetJewel(chain.Jewels[0], TYPE_ONE, 1, TYPE_ONE));
+        Spawn(chain, 1, positionsChain.Connect, TYPE_ONE);
+
+        Add(_actorsPool.GetJewelEnd(chain.Jewels[positionsChain.Connect], 0)); //****
+
+        Spawn(chain, positionsChain.Connect + 1, chain.Count, TYPE_THREE, 1);
+        Add(_actorsPool.GetJewelEnd(chain.End, TYPE_THREE));
+
+        chain = positionsChain.Two;
+
+        _laserTwo = _actorsPool.GetLaser(chain.Laser, TYPE_TWO, _count);
+        Add(_startTwo = _actorsPool.GetJewel(chain.Jewels[0], TYPE_TWO, 1, TYPE_TWO));
+        Spawn(chain, 1, chain.Count , TYPE_TWO);
+        Add(_actorsPool.GetJewel(chain.End, URandom.IsTrue(CHANCE) ? TYPE_TWO : 0, positionsChain.Two.Count + 1, TYPE_TWO));
+
 
         return true;
 
@@ -53,21 +66,13 @@ public class LevelTwo : ALevel
             return chain;
         }
         //======================
-        void Spawn(PositionsChainOne chain, ref Laser laser, ref IJewel start, int type)
+        void Spawn(PositionsChainOne chain, int start, int end, int type, int startNum = 2)
         {
-            laser = _actorsPool.GetLaser(chain.Laser, type, _count);
-            Add(start = _actorsPool.GetJewel(chain.Jewels[0], type, 1, type));
-            for (int i = 1; i < chain.Count; i++)
-                Add(_actorsPool.GetJewel(chain.Jewels[i], URandom.IsTrue(CHANCE) ? type : 0, i + 1, type));
-            Add(_actorsPool.GetJewelEnd(chain.End, type));
+            for (int i = start, k = startNum; i < end; i++, k++)
+                Add(_actorsPool.GetJewel(chain.Jewels[i], URandom.IsTrue(CHANCE) ? type : 0, k, type));
+            //Add(_actorsPool.GetJewelEnd(chain.End, type));
         }
         #endregion
-    }
-
-    public override void Run()
-    {
-        _laserTwo.Run();
-        base.Run();
     }
 
     public override bool CheckChain()
@@ -116,6 +121,14 @@ public class LevelTwo : ALevel
             return jewel.IsVisited = true;
         }
         #endregion
+    }
+
+    public override void Run()
+    {
+        _laserOne.Run();
+        _laserTwo.Run();
+        _jewels.ForEach((j) => j.Run());
+       // CheckChain();
     }
 
     public override void Clear()

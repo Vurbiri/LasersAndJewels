@@ -8,16 +8,20 @@ public class GameArea : MonoBehaviour
 {
     [SerializeField] private Vector2Int _size = new(10, 9);
 
-    private ALevel _level;
-    private int _countJewel = 15, _baseMaxDistance;
+    private readonly Dictionary<LevelType, ALevel> _levels = new(3);
+    private ALevel _currentLevel;
+    private int _countJewel = 20, _baseMaxDistance;
 
     private void Awake()
     {
         ActorsPool actorsPool = GetComponent<ActorsPool>();
         actorsPool.Initialize(OnSelected);
 
-        //_level = new LevelOne(_size, actorsPool);
-        _level = new LevelTwo(_size, actorsPool);
+        _levels.Add(LevelType.LevelOne, new LevelOne(_size, actorsPool));
+        _levels.Add(LevelType.LevelTwo, new LevelTwo(_size, actorsPool));
+        _levels.Add(LevelType.LevelTwoToOne, new LevelTwoToOne(_size, actorsPool));
+
+        _currentLevel = _levels[LevelType.LevelTwo];
 
         _baseMaxDistance = Mathf.Min(_size.x, _size.y);
     }
@@ -25,16 +29,16 @@ public class GameArea : MonoBehaviour
     private void Start()
     {
         int count = _countJewel;
-        while (!_level.Create(count--, _baseMaxDistance - count / 10));
+        while (!_currentLevel.Create(count--, _baseMaxDistance - count / 10));
 
         Debug.Log(count);
 
-        _level.Run();
+        _currentLevel.Run();
     }
 
     private void OnSelected()
     {
-        if (_level.CheckChain())
+        if (_currentLevel.CheckChain())
             StartCoroutine(GameOver_Coroutine());
     }
 
@@ -42,7 +46,7 @@ public class GameArea : MonoBehaviour
     {
         Debug.Log("-=/ Level complete \\=-");
         yield return new WaitForSecondsRealtime(2f);
-        _level.Clear();
+        _currentLevel.Clear();
         Start();
     }
     

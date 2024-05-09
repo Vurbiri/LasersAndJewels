@@ -4,13 +4,16 @@ using UnityEngine;
 public abstract class ALevelGeneratorTwo : ALevelGenerator
 {
     protected LaserSimple _laserOne;
-    protected List<JewelSimple> _jewelsOne;
-    protected int _chance, _typeBase;
+    protected List<Vector2Int> _jewelsOne;
+    protected int _offset, _connectIndex;
+    protected Vector2Int _orientationBranchIn, _orientationBranchOut;
 
     public ALevelGeneratorTwo(Vector2Int size) : base(size) { }
 
-    protected bool SetupTwo(int count)
+    protected virtual bool SetupTwo(int count)
     {
+        if (!Branch()) return false;
+
         funcIsNotBetween = IsNotBetweenTwo;
 
         _laserOne = _laserCurrent;
@@ -19,38 +22,59 @@ public abstract class ALevelGeneratorTwo : ALevelGenerator
         _countCurrent = count;
         _jewelsCurrent = new(count);
 
-        Vector2Int[] directions = Direction2D.Line;
-        Vector2Int laser;
-        int error = 0;
-        count = COUNT_ERROR >> 1;
+        Add();
 
-        while (error++ < count)
+        return true;
+
+        #region Local functions
+        //======================
+        bool Branch()
         {
-            _indexCurrent = URandom.Vector2Int(_size);
-            if (!IsEmpty(_indexCurrent) && !IsNotBetween(_laserOne, _jewelsOne))
-                continue;
+            int maxIndex = _countCurrent - _offset, leftIndex = Random.Range(_offset + 1, maxIndex), rightIndex = leftIndex;
 
-            foreach (byte index in URandom.FourIndexes)
+            while (leftIndex >= _offset || rightIndex < maxIndex)
             {
-                laser = _indexCurrent;
-                _excluding = directions[index];
-                while (IsEmpty(laser += _excluding)) ;
-                if (!IsCorrect(laser) && laser != _laserOne.Index)
-                {
-                    _laserCurrent = new(laser, -_excluding, _typeCurrent);
-                    Add();
+                if (leftIndex >= _offset && TryInsert(_jewelsCurrent[_connectIndex = leftIndex--]))
                     return true;
-                }
+                if (rightIndex < maxIndex && TryInsert(_jewelsCurrent[_connectIndex = rightIndex++]))
+                    return true;
+            }
+            return false;
+        }
+        //======================
+        bool TryInsert(Vector2Int connectCurrent)
+        {
+            _orientationBranchIn = _jewelsCurrent[_connectIndex - 1] - connectCurrent;
+            _orientationBranchOut = _jewelsCurrent[_connectIndex + 1] - connectCurrent;
+
+            foreach (Vector2Int direction in Direction2D.ExcludingRange(_orientationBranchIn, _orientationBranchOut))
+            {
+                if (CheckAdd(connectCurrent, direction))
+                    return true;
+            }
+
+            return false;
+        }
+        #endregion
+    }
+
+    protected bool SetupLaserTwo()
+    {
+        Vector2Int laser;
+        foreach (Vector2Int direction in Direction2D.LineRange)
+        {
+            laser = _indexCurrent;
+            while (IsEmpty(laser += direction)) ;
+            if (!IsCorrect(laser) && laser != _laserOne.Index)
+            {
+                _excluding = direction;
+                _laserCurrent = new(laser, -direction);
+                return true;
             }
         }
+
         return false;
     }
 
     protected bool IsNotBetweenTwo() => IsNotBetween(_laserCurrent, _jewelsCurrent) && IsNotBetween(_laserOne, _jewelsOne);
-
-    protected override void Add()
-    {
-        _typeCurrent = URandom.IsTrue(_chance) || _jewelsCurrent.Count == 0 || _jewelsCurrent.Count == _countCurrent - 1 ? _typeBase : 0;
-        base.Add();
-    }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LevelOne : ALevel
 {
-    private LevelGeneratorOne _generator;
+    private readonly LevelGeneratorOne _generator;
 
     public override LevelType Type => LevelType.LevelOne;
 
@@ -19,20 +19,20 @@ public class LevelOne : ALevel
 
     public override bool Create(int count, int maxDistance)
     {
-        int type = Random.Range(0, 3);
+        int type = Random.Range(0, 3), chance = Random.Range(40, 61);
         PositionsChainOne positionsChain = Generate();
         if (positionsChain == null) return false;
 
         _count = count + 1;
         _jewels = new(count);
 
-        _laserOne = _actorsPool.GetLaser(positionsChain.Laser, _count);
+        _laserOne = _actorsPool.GetLaser(positionsChain.Laser, type, _count);
 
         count = 1;
         foreach (var jewel in positionsChain.Jewels)
-            Add(_actorsPool.GetJewel(jewel, count++, type));
+            Add(_actorsPool.GetJewel(jewel, URandom.IsTrue(chance) ? type : 0 ,count++, type));
 
-        Add(_actorsPool.GetJewelEnd(positionsChain.End));
+        Add(_actorsPool.GetJewelEnd(positionsChain.End, type));
 
         return true;
 
@@ -43,7 +43,7 @@ public class LevelOne : ALevel
             PositionsChainOne chain;
             int attempts = 0, maxAttempts = count << SHIFT_ATTEMPS;
 
-            do chain = _generator.Generate(count, type, maxDistance);
+            do chain = _generator.Generate(count, maxDistance);
             while (++attempts < maxAttempts && chain == null);
 
             Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");

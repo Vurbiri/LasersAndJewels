@@ -26,6 +26,7 @@ public enum LevelType
 {
     LevelOne,
     LevelTwo,
+    LevelTwoToOne,
 }
 
 public enum GameMode : byte

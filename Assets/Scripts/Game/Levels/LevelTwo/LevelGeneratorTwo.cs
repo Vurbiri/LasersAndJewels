@@ -4,17 +4,37 @@ public class LevelGeneratorTwo : ALevelGeneratorTwo
 {
     public LevelGeneratorTwo(Vector2Int size) : base(size) { }
 
-    public PositionsChainTwo Generate(int countOne, int typeOne, int countTwo, int typeTwo, int chance, int maxDistance)
+    public PositionsChainTwo Generate(int countOne, int countTwo, int maxDistance)
     {
-        _area = new bool[_size.x, _size.y];
-        _maxDistance = maxDistance;
-        _chance = chance;
+        if (!GenerateBase(countOne, maxDistance))
+            return null;
 
-        _typeBase = _typeCurrent = typeOne;
-        SetupOne(countOne);
-        if (!GenerateBase()) return null;
-
-        _typeBase = _typeCurrent = typeTwo;
-        return SetupTwo(countTwo) && GenerateBase() ? new(_laserOne, _jewelsOne, _laserCurrent, _jewelsCurrent) : null;
+        return SetupTwo(countTwo) && GenerateChain() ? new(_laserOne, _jewelsOne, _laserCurrent, _jewelsCurrent) : null;
     }
+
+    protected new bool SetupTwo(int count)
+    {
+        funcIsNotBetween = IsNotBetweenTwo;
+
+        _laserOne = _laserCurrent;
+        _jewelsOne = _jewelsCurrent;
+
+        _countCurrent = count;
+        _jewelsCurrent = new(count);
+
+        int error = 0;
+        count = COUNT_ERROR >> 1;
+
+        while (error++ < count)
+        {
+            if (IsEmpty(_indexCurrent = URandom.Vector2Int(_size)) && IsNotBetween(_laserOne, _jewelsOne) && SetupLaserTwo())
+            {
+                Add();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    
 }
