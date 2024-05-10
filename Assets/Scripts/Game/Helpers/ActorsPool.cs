@@ -23,7 +23,7 @@ public class ActorsPool : MonoBehaviour
     private PoolJewels _poolJewel;
     private Pool<JewelEnd> _poolJewelEnd;
     private Pool<Laser> _poolLaser;
-    private PoolSimple<JewelTwoToOne> _poolJewelTwoToOne;
+    private PoolJewelTwoToOne _poolJewelTwoToOne;
 
     public void Initialize(Action onSelected)
     {
@@ -82,12 +82,12 @@ public class ActorsPool : MonoBehaviour
         }
     }
     //***********************************
-    private class PoolSimple<T> where T : AJewelInteractable<T>
+    private class PoolJewelTwoToOne
     {
-        private readonly T _gameObject;
+        private readonly JewelTwoToOne _gameObject;
         private readonly Transform _repository;
 
-        public PoolSimple(T prefab, Transform repository, Action onSelected) 
+        public PoolJewelTwoToOne(JewelTwoToOne prefab, Transform repository, Action onSelected) 
         {
             _repository = repository;
 
@@ -99,13 +99,13 @@ public class ActorsPool : MonoBehaviour
 
         }
 
-        public T GetObject(Transform parent)
+        public JewelTwoToOne GetObject(Transform parent)
         {
             _gameObject.SetParent(parent);
             return _gameObject;
         }
 
-        protected void OnDeactivate(T poolObject)
+        protected void OnDeactivate(JewelTwoToOne poolObject)
         {
             poolObject.SetParent(_repository);
         }

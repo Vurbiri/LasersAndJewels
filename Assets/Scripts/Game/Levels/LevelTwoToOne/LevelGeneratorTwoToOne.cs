@@ -6,8 +6,6 @@ public class LevelGeneratorTwoToOne : ALevelGeneratorTwo
 
     public PositionsChainTwo Generate(int countOne, int countTwo, int maxDistance)
     {
-        _offset = (countTwo >> 1) + 1;
-
         if (!GenerateBase(countOne, maxDistance))
             return null;
 
@@ -22,7 +20,7 @@ public class LevelGeneratorTwoToOne : ALevelGeneratorTwo
         //======================
         bool AddLaserTwo()
         {
-            while(_jewelsCurrent.Count > _offset)
+            while(_jewelsCurrent.Count > 2)
             {
                 _excluding = _jewelsCurrent[^2] - _jewelsCurrent[^1];
 

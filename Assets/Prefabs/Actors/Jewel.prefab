@@ -260,7 +260,7 @@ PrefabInstance:
       addedObject: {fileID: -1974041312605961982}
     - targetCorrespondingSourceObject: {fileID: 4852175054347881723, guid: 60aca0fd2423f2840bbebdb600902bf4, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -9153313997721469998}
+      addedObject: {fileID: 6604037502627985095}
   m_SourcePrefab: {fileID: 100100000, guid: 60aca0fd2423f2840bbebdb600902bf4, type: 3}
 --- !u!198 &4494390942368735012 stripped
 ParticleSystem:
@@ -306,10 +306,10 @@ MonoBehaviour:
   _spriteOn: {fileID: 21300000, guid: b4e7c5edd9997ea43b6491e85a4c579a, type: 3}
   _alfaOff: 0.65
   _spriteOff: {fileID: 21300000, guid: 80dd7e9d76eba294ea516ec90ab653d8, type: 3}
-  _collider: {fileID: -9153313997721469998}
+  _collider: {fileID: 6604037502627985095}
   _textCount: {fileID: 9017782455064332976}
---- !u!61 &-9153313997721469998
-BoxCollider2D:
+--- !u!58 &6604037502627985095
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -341,15 +341,5 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_Radius: 0.5

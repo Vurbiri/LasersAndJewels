@@ -35,6 +35,4 @@ public class LevelGeneratorTwo : ALevelGeneratorTwo
         }
         return false;
     }
-
-    
 }

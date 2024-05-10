@@ -72,7 +72,7 @@ public class LevelTwo : ALevel
 
     public override bool CheckChain()
     {
-        bool isLevelComplete = CheckChain(_laserOne, _startOne, _laserTwo.IdType) + CheckChain(_laserTwo, _startTwo, _laserOne.IdType) == _count;
+        bool isLevelComplete = CheckChain(_laserOne, _startOne, _laserTwo.LaserType) + CheckChain(_laserTwo, _startTwo, _laserOne.LaserType) == _count;
 
         foreach (IJewel jewel in _jewels)
             jewel.Switch(isLevelComplete);

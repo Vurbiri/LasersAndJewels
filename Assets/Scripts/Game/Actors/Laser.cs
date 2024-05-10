@@ -13,7 +13,7 @@ public class Laser : APooledObject<Laser>, ILaser
     private int _idType;
     private Vector3[] _positionsRay;
 
-    public int IdType => _idType;
+    public int LaserType => _idType;
     public Vector2Int Index => _index;
     public Vector2Int Orientation => _orientation;
     public Vector3[] PositionsRay => _positionsRay;
@@ -26,7 +26,6 @@ public class Laser : APooledObject<Laser>, ILaser
 
         _thisTransform.localPosition = Vector3.zero;
 
-        _laserRay.positionCount = 0;
         _positionsRay = new Vector3[maxCountRay];
 
         Color color = _colors[_idType];
@@ -46,5 +45,11 @@ public class Laser : APooledObject<Laser>, ILaser
     {
         _laserRay.positionCount = count;
         _laserRay.SetPositions(_positionsRay);
+    }
+
+    public override void Deactivate()
+    {
+        _laserRay.positionCount = 0;
+        base.Deactivate();
     }
 }

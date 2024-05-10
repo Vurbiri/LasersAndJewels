@@ -19,7 +19,7 @@ public class LevelOne : ALevel
 
     public override bool Create(int count, int maxDistance)
     {
-        int type = Random.Range(0, 3), chance = Random.Range(40, 61);
+        int type = Random.Range(0, 4);
         PositionsChainOne positionsChain = Generate();
         if (positionsChain == null) return false;
 
@@ -30,7 +30,7 @@ public class LevelOne : ALevel
 
         count = 1;
         foreach (var jewel in positionsChain.Jewels)
-            Add(_actorsPool.GetJewel(jewel, URandom.IsTrue(chance) ? type : 0 ,count++, type));
+            Add(_actorsPool.GetJewel(jewel, type, count++, type));
 
         Add(_actorsPool.GetJewelEnd(positionsChain.End, type));
 

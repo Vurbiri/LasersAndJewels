@@ -2,15 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 [RequireComponent(typeof(ActorsPool))]
 public class GameArea : MonoBehaviour
 {
     [SerializeField] private Vector2Int _size = new(10, 9);
+    [SerializeField] private int _countJewel = 20;
+    [SerializeField] private int _baseMaxDistance = 7;
+    [SerializeField] private LevelType _currentType = LevelType.LevelTwoToOne;
 
     private readonly Dictionary<LevelType, ALevel> _levels = new(3);
     private ALevel _currentLevel;
-    private int _countJewel = 20, _baseMaxDistance;
 
     private void Awake()
     {
@@ -21,9 +22,9 @@ public class GameArea : MonoBehaviour
         _levels.Add(LevelType.LevelTwo, new LevelTwo(_size, actorsPool));
         _levels.Add(LevelType.LevelTwoToOne, new LevelTwoToOne(_size, actorsPool));
 
-        _currentLevel = _levels[LevelType.LevelTwo];
+        _currentLevel = _levels[_currentType];
 
-        _baseMaxDistance = Mathf.Min(_size.x, _size.y);
+        _baseMaxDistance = 7;
     }
 
     private void Start()
@@ -49,7 +50,7 @@ public class GameArea : MonoBehaviour
         _currentLevel.Clear();
         Start();
     }
-    
+
 
 #if UNITY_EDITOR
     public void OnDrawGizmosSelected()

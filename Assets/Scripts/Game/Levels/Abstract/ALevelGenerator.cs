@@ -26,6 +26,8 @@ public abstract class ALevelGenerator
 
     protected bool GenerateBase(int count, int maxDistance)
     {
+        //Random.InitState((int)(System.DateTime.Now.Ticks - System.DateTime.UnixEpoch.Ticks));
+
         _area = new bool[_size.x, _size.y];
         _maxDistance = maxDistance;
 
@@ -117,6 +119,7 @@ public abstract class ALevelGenerator
 
     protected bool CheckAdd(Vector2Int start, Vector2Int direction)
     {
+        Vector2Int temp = start;
         if (!IsEmpty(start += direction)) return false;
 
         Vector2Int end = start;
@@ -127,14 +130,14 @@ public abstract class ALevelGenerator
         if (funcIsNotBetween())
             return true;
 
-        start = _indexCurrent;
-        end = _jewelsCurrent[^1];
+        start = temp;
+        temp = _indexCurrent;
 
-        while ((_indexCurrent -= direction) != end)
+        while ((_indexCurrent -= direction) != start)
             if (funcIsNotBetween())
                 return true;
 
-        _indexCurrent = start;
+        _indexCurrent = temp;
 
         while (IsEmpty(_indexCurrent += direction))
             if (funcIsNotBetween())
@@ -172,6 +175,6 @@ public abstract class ALevelGenerator
         _area[index.x, index.y] = false;
     }
 
-    protected bool IsEmpty(Vector2Int index) => index.x >= 0 && index.x < _size.x && index.y >= 0 && index.y < _size.y && !_area[index.x, index.y];
+    protected bool IsEmpty(Vector2Int index) => IsCorrect(index) && !_area[index.x, index.y];
     protected bool IsCorrect(Vector2Int index) => index.x >= 0 && index.x < _size.x && index.y >= 0 && index.y < _size.y;
 }

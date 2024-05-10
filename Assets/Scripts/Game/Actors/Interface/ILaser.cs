@@ -5,7 +5,7 @@ using UnityEngine.Rendering.Universal;
 
 public interface ILaser
 {
-    public int IdType { get; }
+    public int LaserType { get; }
     public Vector2Int Index { get; }
     public Vector2Int Orientation { get; }
     public Vector3[] PositionsRay { get; }

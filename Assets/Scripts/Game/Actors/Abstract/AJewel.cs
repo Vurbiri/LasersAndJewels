@@ -15,8 +15,8 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
     [SerializeField] private float _alfaOff = 0.55f;
     [SerializeField] private Sprite _spriteOff;
 
-    public int IdType => _idType;
-    public bool IsVisited { get => _isVisited; set => _isVisited = value; }
+    public virtual int IdType => _idType;
+    public virtual bool IsVisited { get; set; }
     public abstract bool IsEnd { get; }
     public Vector2Int Index => _index;
     public Vector2Int Orientation { get; protected set; } = Vector2Int.zero;
@@ -26,7 +26,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
 
     protected int _idType;
     protected Vector2Int _index;
-    protected bool _isOn = true, _isVisited = false;
+    protected bool _isOn = true;
     protected Color _colorOn = Color.white;
     protected Color _colorOff = Color.gray;
 
@@ -48,9 +48,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _colorOff = color.SetAlpha(_alfaOff);
 
         _isOn = true;
-        _isVisited = false;
-
-        Run();
+        IsVisited = false;
     }
 
     public virtual void Run()
@@ -62,12 +60,12 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
 
     public void Switch(bool isLevelComplete)
     {
-        if (_isVisited)
+        if (IsVisited)
             On(isLevelComplete);
         else
             Off();
 
-        _isVisited = false;
+        IsVisited = false;
     }
 
     protected abstract void On(bool isLevelComplete);
@@ -81,7 +79,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _particle.Play();
     }
 
-    public void Off()
+    public virtual void Off()
     {
         if (!_isOn) return;
 

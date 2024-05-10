@@ -5,8 +5,8 @@ public abstract class ALevelGeneratorTwo : ALevelGenerator
 {
     protected LaserSimple _laserOne;
     protected List<Vector2Int> _jewelsOne;
-    protected int _offset, _connectIndex;
-    protected Vector2Int _orientationBranchIn, _orientationBranchOut;
+    protected int _connectIndex;
+    protected Vector2Int _orientationBranchIn, _orientationBranchOut, _orientationBranchNew;
 
     public ALevelGeneratorTwo(Vector2Int size) : base(size) { }
 
@@ -20,7 +20,11 @@ public abstract class ALevelGeneratorTwo : ALevelGenerator
         _jewelsOne = _jewelsCurrent;
 
         _countCurrent = count;
+        _laserCurrent = new(_jewelsCurrent[_connectIndex], _orientationBranchOut);
         _jewelsCurrent = new(count);
+
+        _orientationBranchNew = _excluding;
+        Debug.Log(_orientationBranchIn + " == " + _orientationBranchNew);
 
         Add();
 
@@ -30,11 +34,11 @@ public abstract class ALevelGeneratorTwo : ALevelGenerator
         //======================
         bool Branch()
         {
-            int maxIndex = _countCurrent - _offset, leftIndex = Random.Range(_offset + 1, maxIndex), rightIndex = leftIndex;
+            int minIndex = 2, maxIndex = _countCurrent - minIndex, leftIndex = (minIndex + maxIndex) >> 1, rightIndex = leftIndex;
 
-            while (leftIndex >= _offset || rightIndex < maxIndex)
+            while (leftIndex >= minIndex || rightIndex < maxIndex)
             {
-                if (leftIndex >= _offset && TryInsert(_jewelsCurrent[_connectIndex = leftIndex--]))
+                if (leftIndex >= minIndex && TryInsert(_jewelsCurrent[_connectIndex = leftIndex--]))
                     return true;
                 if (rightIndex < maxIndex && TryInsert(_jewelsCurrent[_connectIndex = rightIndex++]))
                     return true;
@@ -50,7 +54,10 @@ public abstract class ALevelGeneratorTwo : ALevelGenerator
             foreach (Vector2Int direction in Direction2D.ExcludingRange(_orientationBranchIn, _orientationBranchOut))
             {
                 if (CheckAdd(connectCurrent, direction))
+                {
+                    _excluding = direction;
                     return true;
+                }
             }
 
             return false;
@@ -77,4 +84,5 @@ public abstract class ALevelGeneratorTwo : ALevelGenerator
     }
 
     protected bool IsNotBetweenTwo() => IsNotBetween(_laserCurrent, _jewelsCurrent) && IsNotBetween(_laserOne, _jewelsOne);
+
 }

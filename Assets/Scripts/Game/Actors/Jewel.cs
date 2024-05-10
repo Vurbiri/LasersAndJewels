@@ -1,17 +1,27 @@
+using System;
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider2D))]
-public class Jewel : AJewelInteractable<Jewel>
-{
+[RequireComponent(typeof(Collider2D))]
+public class Jewel : AJewel<Jewel>, IMouseClick
+{ 
     [Space]
     [SerializeField] private TMP_Text _textCount;
+
+    private Collider2D _collider;
+    private Transform _spriteTransform;
+    private readonly LoopArray<TurnData> _turnData = new(TurnData.Direction);
+
+    public override bool IsEnd => false;
+
+    public event Action EventSelected;
 
     public override void Initialize()
     {
         _spriteTransform = _spriteRenderer.gameObject.transform;
+        _collider = GetComponent<Collider2D>();
 
-        IsInteractable = false;
+        _collider.enabled = false;
         base.Initialize();
     }
 
@@ -27,6 +37,26 @@ public class Jewel : AJewelInteractable<Jewel>
     {
         Turn(_turnData.Default);
         base.Run();
-        IsInteractable = true;
+        _collider.enabled = true;
+    }
+
+    protected override void On(bool isLevelComplete)
+    {
+        if (isLevelComplete) _collider.enabled = false;
+
+        BaseOn();
+    }
+
+    private void Turn(TurnData turnData)
+    {
+        _spriteTransform.rotation = turnData.Turn;
+        Orientation = turnData.Orientation;
+    }
+
+    public void OnMouseClick(bool isLeft)
+    {
+        Turn(isLeft ? _turnData.Back : _turnData.Forward);
+
+        if (_isOn) EventSelected?.Invoke();
     }
 }
