@@ -294,7 +294,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ccf9497a5b4b304bbba306ff492e3c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spriteRenderer: {fileID: 6380130479005947789}
+  _spriteModule:
+    _spriteRenderer: {fileID: 6380130479005947789}
+    _alfaOn: 0.9
+    _spriteOn: {fileID: 21300000, guid: b4e7c5edd9997ea43b6491e85a4c579a, type: 3}
+    _alfaOff: 0.65
+    _spriteOff: {fileID: 21300000, guid: 80dd7e9d76eba294ea516ec90ab653d8, type: 3}
   _particle: {fileID: 4494390942368735012}
   _colors:
   - {r: 0.87058824, g: 0.87058824, b: 1, a: 1}
@@ -302,11 +307,6 @@ MonoBehaviour:
   - {r: 0.50980395, g: 0.50980395, b: 0.9137255, a: 1}
   - {r: 0.92156863, g: 0.3254902, b: 0.14117648, a: 1}
   _brightnessParticle: 1.2
-  _alfaOn: 0.9
-  _spriteOn: {fileID: 21300000, guid: b4e7c5edd9997ea43b6491e85a4c579a, type: 3}
-  _alfaOff: 0.65
-  _spriteOff: {fileID: 21300000, guid: 80dd7e9d76eba294ea516ec90ab653d8, type: 3}
-  _collider: {fileID: 6604037502627985095}
   _textCount: {fileID: 9017782455064332976}
 --- !u!58 &6604037502627985095
 CircleCollider2D:

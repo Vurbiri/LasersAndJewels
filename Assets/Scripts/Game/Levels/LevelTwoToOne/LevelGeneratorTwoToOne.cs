@@ -4,7 +4,7 @@ public class LevelGeneratorTwoToOne : ALevelGeneratorTwo
 {
     public LevelGeneratorTwoToOne(Vector2Int size) : base(size) { }
 
-    public PositionsChainTwo Generate(int countOne, int countTwo, int maxDistance)
+    public override PositionsChainTwo Generate(int countOne, int countTwo, int maxDistance)
     {
         if (!GenerateBase(countOne, maxDistance))
             return null;
@@ -14,7 +14,7 @@ public class LevelGeneratorTwoToOne : ALevelGeneratorTwo
 
         _jewelsCurrent.Reverse();
 
-        return  new(_laserOne, _jewelsOne, _laserCurrent, _jewelsCurrent, _connectIndex);
+        return  new(_laserOne, _jewelsOne, _laserCurrent, _jewelsCurrent, _branchData);
 
         #region Local functions
         //======================

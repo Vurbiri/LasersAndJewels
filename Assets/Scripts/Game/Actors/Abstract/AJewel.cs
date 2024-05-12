@@ -1,38 +1,31 @@
-using System;
 using UnityEngine;
 
 public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
 {
-    [SerializeField] protected SpriteRenderer _spriteRenderer;
+    [SerializeField] protected SpriteModule _spriteModule;
     [SerializeField] private ParticleSystem _particle;
     [Space]
     [SerializeField] protected Color[] _colors;
     [Space]
     [SerializeField] protected float _brightnessParticle = 1.2f;
-    [Space]
-    [SerializeField] private float _alfaOn = 0.85f;
-    [SerializeField] private Sprite _spriteOn;
-    [SerializeField] private float _alfaOff = 0.55f;
-    [SerializeField] private Sprite _spriteOff;
 
     public virtual int IdType => _idType;
-    public virtual bool IsVisited { get; set; }
+    public virtual bool IsVisited { get => _isVisited; set => _isVisited = value; }
     public abstract bool IsEnd { get; }
     public Vector2Int Index => _index;
-    public Vector2Int Orientation { get; protected set; } = Vector2Int.zero;
+    public Vector2Int Orientation => _orientation;
     public virtual Vector3 LocalPosition => _thisTransform.localPosition;
 
-    ParticleSystem.MainModule _mainParticle;
+    private ParticleSystem.MainModule _mainParticle;
 
     protected int _idType;
-    protected Vector2Int _index;
-    protected bool _isOn = true;
-    protected Color _colorOn = Color.white;
-    protected Color _colorOff = Color.gray;
+    protected Vector2Int _index, _orientation;
+    protected bool _isOn = true, _isVisited = false, _universalType;
 
     public override void Initialize()
     {
         _mainParticle = _particle.main;
+        _spriteModule.Initialize();
 
         base.Initialize();
     }
@@ -40,15 +33,15 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
     protected void BaseSetup(Vector2Int index, int idType)
     {
         _idType = idType;
+        _universalType = idType == 0;
         _index = index;
         
         Color color = _colors[_idType];
         _mainParticle.startColor = color.Brightness(_brightnessParticle);
-        _colorOn = color.SetAlpha(_alfaOn);
-        _colorOff = color.SetAlpha(_alfaOff);
+        _spriteModule.Setup(color);
 
         _isOn = true;
-        IsVisited = false;
+        _isVisited = false;
     }
 
     public virtual void Run()
@@ -58,14 +51,23 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         Activate();
     }
 
+    public bool ToVisit(int idType)
+    {
+        if (_isVisited) return false;
+
+        return _isVisited = CheckType(idType);
+    }
+
+    public bool CheckType(int idType) => _universalType || idType == _idType;
+
     public void Switch(bool isLevelComplete)
     {
-        if (IsVisited)
+        if (_isVisited)
             On(isLevelComplete);
         else
             Off();
 
-        IsVisited = false;
+        _isVisited = false;
     }
 
     protected abstract void On(bool isLevelComplete);
@@ -74,19 +76,18 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         if (_isOn) return;
         
         _isOn = true;
-        _spriteRenderer.color = _colorOn;
-        _spriteRenderer.sprite = _spriteOn;
+        _spriteModule.On();
         _particle.Play();
     }
 
-    public virtual void Off()
+    private void Off()
     {
         if (!_isOn) return;
 
         _isOn = false;
-        _spriteRenderer.color = _colorOff;
-        _spriteRenderer.sprite = _spriteOff;
+        _spriteModule.Off();
         _particle.Stop();
+        _particle.Clear();
     }
 
     

@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
 
 public class LoopArray<T>
 {
-    private const int CAPACITY_DEFAULT = 4;
-    private T[] _array;
-    private int _cursor = 0, _default = 0, _count = 0, _capacity = CAPACITY_DEFAULT;
+    private readonly T[] _array;
+    private readonly int _default = 0, _count = 0;
+    private int _cursor = 0;
 
     public int Count => _count;
+    public int Cursor { get => _cursor; set => _cursor = value; }
 
     public T Default => _array[_cursor = _default];
     public T Forward
@@ -29,31 +28,13 @@ public class LoopArray<T>
         }
     }
 
-    public LoopArray() => _array = new T[_capacity];
-    public LoopArray(int capacity)
-    {
-        if (capacity > 0)
-            _capacity = capacity;
-
-        _array = new T[_capacity];
-    }
-
     public LoopArray(T[] array)
     {
-        _capacity = _count = array.Length;
-        _array = new T[_capacity];
+        _count = array.Length;
+        _array = new T[_count];
 
-        for(int i = 0; i < _count; i++)
-            _array[i] = array[i];
+        _array = array;
+        //for(int i = 0; i < _count; i++)
+        //    _array[i] = array[i];
     }
-
-    public void Add(T item)
-    {
-        while (_count >= _capacity)
-            Array.Resize<T>(ref _array, _capacity <<= 1);
-
-        _array[_count++] = item;
-    }
-
-    public void SetDefault(int value) => _default = value;
 }

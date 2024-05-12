@@ -4,7 +4,7 @@ public class LevelGeneratorTwo : ALevelGeneratorTwo
 {
     public LevelGeneratorTwo(Vector2Int size) : base(size) { }
 
-    public PositionsChainTwo Generate(int countOne, int countTwo, int maxDistance)
+    public override PositionsChainTwo Generate(int countOne, int countTwo, int maxDistance)
     {
         if (!GenerateBase(countOne, maxDistance))
             return null;

@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 public class ActorsPool : MonoBehaviour
 {
     [Space]
-    [SerializeField] private Transform _repository;
     [SerializeField] private Transform _container;
     [Space]
     [SerializeField] private Jewel _prefabJewel;
@@ -19,45 +16,55 @@ public class ActorsPool : MonoBehaviour
     [SerializeField] private int _sizePoolLaser = 2;
     [Space]
     [SerializeField] private JewelTwoToOne _prefabJewelTwoToOne;
+    [SerializeField] private JewelOneToTwo _prefabJewelOneToTwo;
 
     private PoolJewels _poolJewel;
     private Pool<JewelEnd> _poolJewelEnd;
     private Pool<Laser> _poolLaser;
-    private PoolJewelTwoToOne _poolJewelTwoToOne;
+    private PoolJewelTo<JewelTwoToOne> _poolJewelTwoToOne;
+    private PoolJewelTo<JewelOneToTwo> _poolJewelOneToTwo;
 
     public void Initialize(Action onSelected)
     {
-        _poolJewel = new(_prefabJewel, _repository, _sizePoolJewel, onSelected);
-        _poolJewelEnd = new(_prefabJewelEnd, _repository, _sizePoolJewelEnd);
-        _poolLaser = new(_prefabLaser, _repository, _sizePoolLaser);
-        _poolJewelTwoToOne = new(_prefabJewelTwoToOne, _repository, onSelected);
+        _poolJewel = new(_prefabJewel, _container, _sizePoolJewel, onSelected);
+        _poolJewelEnd = new(_prefabJewelEnd, _container, _sizePoolJewelEnd);
+        _poolLaser = new(_prefabLaser, _container, _sizePoolLaser);
+        _poolJewelTwoToOne = new(_prefabJewelTwoToOne, _container, onSelected);
+        _poolJewelOneToTwo = new(_prefabJewelOneToTwo, _container, onSelected);
     }
 
     public Jewel GetJewel(Vector2Int index, int idType, int count, int group)
     {
-        Jewel jewel = _poolJewel.GetObject(_container);
+        Jewel jewel = _poolJewel.GetObject();
         jewel.Setup(index, idType, count, group);
         return jewel;
     }
 
     public JewelEnd GetJewelEnd(Vector2Int index, int idType)
     {
-        JewelEnd jewel = _poolJewelEnd.GetObject(_container);
+        JewelEnd jewel = _poolJewelEnd.GetObject();
         jewel.Setup(index, idType);
         return jewel;
     }
 
     public Laser GetLaser(LaserSimple laserSimple, int idType, int maxCountRay)
     {
-        Laser laser = _poolLaser.GetObject(_container);
+        Laser laser = _poolLaser.GetObject();
         laser.Setup(laserSimple, idType, maxCountRay);
         return laser;
     }
 
-    public JewelTwoToOne GetJewelTwoToOne(Vector2Int index, int idType, int maxCountRay)
+    public JewelTwoToOne GetJewelTwoToOne(BranchData data, int typeOut, int typeInA, int typeInB, int maxCountRay)
     {
-        JewelTwoToOne jewel = _poolJewelTwoToOne.GetObject(_container);
-        jewel.Setup(index, idType, maxCountRay);
+        JewelTwoToOne jewel = _poolJewelTwoToOne.GetObject();
+        jewel.Setup(data, typeOut, typeInA, typeInB, maxCountRay);
+        return jewel;
+    }
+
+    public JewelOneToTwo GetJewelOneToTwo(BranchData data, int typeOutA, int typeOutB, int typeIn, int maxCountRay)
+    {
+        JewelOneToTwo jewel = _poolJewelOneToTwo.GetObject();
+        jewel.Setup(data, typeOutA, typeOutB, typeIn, maxCountRay);
         return jewel;
     }
 
@@ -71,7 +78,7 @@ public class ActorsPool : MonoBehaviour
         {
             _onSelected = onSelected;
             for (int i = 0; i < size; i++)
-                OnDeactivate(CreateObject());
+                _pool.Push(CreateObject());
         }
 
         protected override Jewel CreateObject()
@@ -82,33 +89,18 @@ public class ActorsPool : MonoBehaviour
         }
     }
     //***********************************
-    private class PoolJewelTwoToOne
+    private class PoolJewelTo<T> where T : MonoBehaviour, IJewelTo
     {
-        private readonly JewelTwoToOne _gameObject;
-        private readonly Transform _repository;
+        private readonly T _gameObject;
 
-        public PoolJewelTwoToOne(JewelTwoToOne prefab, Transform repository, Action onSelected) 
+        public PoolJewelTo(T prefab, Transform repository, Action onSelected) 
         {
-            _repository = repository;
-
-            _gameObject = Instantiate(prefab);
+            _gameObject = Instantiate(prefab, repository);
             _gameObject.Initialize();
-            _gameObject.EventDeactivate += OnDeactivate;
             _gameObject.EventSelected += onSelected;
-            _gameObject.SetParent(_repository);
-
         }
 
-        public JewelTwoToOne GetObject(Transform parent)
-        {
-            _gameObject.SetParent(parent);
-            return _gameObject;
-        }
-
-        protected void OnDeactivate(JewelTwoToOne poolObject)
-        {
-            poolObject.SetParent(_repository);
-        }
+        public T GetObject() => _gameObject;
     }
     #endregion
 }

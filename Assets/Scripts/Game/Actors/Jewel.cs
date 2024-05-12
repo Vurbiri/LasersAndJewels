@@ -9,7 +9,6 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     [SerializeField] private TMP_Text _textCount;
 
     private Collider2D _collider;
-    private Transform _spriteTransform;
     private readonly LoopArray<TurnData> _turnData = new(TurnData.Direction);
 
     public override bool IsEnd => false;
@@ -18,7 +17,6 @@ public class Jewel : AJewel<Jewel>, IMouseClick
 
     public override void Initialize()
     {
-        _spriteTransform = _spriteRenderer.gameObject.transform;
         _collider = GetComponent<Collider2D>();
 
         _collider.enabled = false;
@@ -49,8 +47,8 @@ public class Jewel : AJewel<Jewel>, IMouseClick
 
     private void Turn(TurnData turnData)
     {
-        _spriteTransform.rotation = turnData.Turn;
-        Orientation = turnData.Orientation;
+        _spriteModule.LocalRotation = turnData.Turn;
+        _orientation = turnData.Orientation;
     }
 
     public void OnMouseClick(bool isLeft)

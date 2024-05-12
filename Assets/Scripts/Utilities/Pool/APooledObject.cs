@@ -22,6 +22,7 @@ public abstract class APooledObject<T> : MonoBehaviour where T : APooledObject<T
 
     public void SetParent(Transform parent)
     {
-        _thisTransform.SetParent(parent);
+        if (parent != null && _thisTransform.parent != parent)
+            _thisTransform.SetParent(parent);
     }
 }

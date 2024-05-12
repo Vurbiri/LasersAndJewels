@@ -4,7 +4,7 @@ public class LevelOne : ALevel
 {
     private readonly LevelGeneratorOne _generator;
 
-    public override LevelType Type => LevelType.LevelOne;
+    public override LevelType Type => LevelType.One;
 
     public LevelOne(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
@@ -23,10 +23,10 @@ public class LevelOne : ALevel
         PositionsChainOne positionsChain = Generate();
         if (positionsChain == null) return false;
 
-        _count = count + 1;
+        _count = count;// + 1;
         _jewels = new(count);
 
-        _laserOne = _actorsPool.GetLaser(positionsChain.Laser, type, _count);
+        _laserOne = _actorsPool.GetLaser(positionsChain.Laser, type, count + 1);
 
         count = 1;
         foreach (var jewel in positionsChain.Jewels)
@@ -55,43 +55,53 @@ public class LevelOne : ALevel
 
     public override bool CheckChain()
     {
-        int count = 1;
-
-        IJewel current = _jewels[0];
-        Vector2Int index = current.Index, direction = current.Orientation, directionOld = _laserOne.Orientation;
-
-        while (Visited(current) && !current.IsEnd)
-        {
-            while (IsEmpty(index += direction)) ;
-
-            if (!IsCorrect(index)) break;
-
-            current = this[index];
-            directionOld = direction;
-            direction = current.Orientation;
-        }
-
-        bool isLevelComplete = count == _count;
-
-        if (!current.IsEnd && directionOld != -direction)
-            _laserOne.PositionsRay[count++] = index.ToVector3();
+        bool isLevelComplete = CheckChain(_laserOne) == _count;
 
         foreach (IJewel jewel in _jewels)
             jewel.Switch(isLevelComplete);
 
-        _laserOne.SetRayPositions(count);
-
         return isLevelComplete;
-
-        #region Local functions
-        //======================
-        bool Visited(IJewel jewel)
-        {
-            if (jewel.IsVisited) return false;
-
-            _laserOne.PositionsRay[count++] = jewel.LocalPosition;
-            return jewel.IsVisited = true;
-        }
-        #endregion
     }
+
+    //public override bool CheckChain()
+    //{
+    //    int count = 1;
+
+    //    IJewel current = _jewels[0];
+    //    Vector2Int index = current.Index, direction = current.Orientation, directionOld = _laserOne.Orientation;
+
+    //    while (Visited(current) && !current.IsEnd)
+    //    {
+    //        while (IsEmpty(index += direction)) ;
+
+    //        if (!IsCorrect(index)) break;
+
+    //        current = this[index];
+    //        directionOld = direction;
+    //        direction = current.Orientation;
+    //    }
+
+    //    bool isLevelComplete = count == _count;
+
+    //    if (!current.IsEnd && directionOld != -direction)
+    //        _laserOne.PositionsRay[count++] = index.ToVector3();
+
+    //    foreach (IJewel jewel in _jewels)
+    //        jewel.Switch(isLevelComplete);
+
+    //    _laserOne.SetRayPositions(count);
+
+    //    return isLevelComplete;
+
+    //    #region Local functions
+    //    //======================
+    //    bool Visited(IJewel jewel)
+    //    {
+    //        if (jewel.IsVisited) return false;
+
+    //        _laserOne.PositionsRay[count++] = jewel.LocalPosition;
+    //        return jewel.IsVisited = true;
+    //    }
+    //    #endregion
+    //}
 }

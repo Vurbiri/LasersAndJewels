@@ -19,4 +19,15 @@ public class TurnData
         Turn = Quaternion.Euler(0f, 0f, angle);
         this.Orientation = orientation;
     }
+
+    public static Quaternion TurnFromOrientation(Vector2Int orientation)
+    {
+        foreach (var direction in _direction) 
+        {
+            if (direction.Orientation == orientation)
+                return direction.Turn;
+        }
+
+        return Quaternion.identity;
+    }
 }

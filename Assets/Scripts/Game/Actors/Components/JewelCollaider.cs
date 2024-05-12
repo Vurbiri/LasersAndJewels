@@ -8,7 +8,7 @@ public class JewelCollider : MonoBehaviour, IMouseClick
     private Collider2D _collider;
 
     public bool IsInteractable { set => _collider.enabled = value; }
-    public Quaternion Rotation { set => _thisTransform.rotation = value; }
+    public Quaternion Rotation { set => _thisTransform.localRotation = value; }
     public Vector3 LocalPosition { get => _thisTransform.localPosition;  set => _thisTransform.localPosition = value; }
 
     public event Action<bool> EventClick;

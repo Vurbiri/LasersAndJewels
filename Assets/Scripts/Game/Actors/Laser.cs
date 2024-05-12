@@ -8,8 +8,7 @@ public class Laser : APooledObject<Laser>, ILaser
     [Space]
     [SerializeField] private Color[] _colors;
 
-    private Vector2Int _orientation;
-    private Vector2Int _index;
+    private Vector2Int _index, _orientation;
     private int _idType;
     private Vector3[] _positionsRay;
 
@@ -36,7 +35,7 @@ public class Laser : APooledObject<Laser>, ILaser
     public void Run()
     {
         _emitter.localPosition = _index.ToVector3();
-        _emitter.rotation = Quaternion.LookRotation(Vector3.forward, _orientation.ToVector3());
+        _emitter.rotation = TurnData.TurnFromOrientation(_orientation);
         _positionsRay[0] = _emitter.localPosition;
         Activate();
     }

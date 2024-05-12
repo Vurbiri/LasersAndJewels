@@ -22,11 +22,18 @@ public enum MessageType : byte
     FatalError
 }
 
-public enum LevelType
+public enum LevelType : byte
 {
-    LevelOne,
-    LevelTwo,
-    LevelTwoToOne,
+    One,
+    Two,
+    TwoToOne,
+    OneToTwo
+}
+
+public enum ModuleType : byte
+{
+    In,
+    Out
 }
 
 public enum GameMode : byte

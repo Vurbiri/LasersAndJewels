@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 6177fb10fc1910b41b37d5ac5282e1fd
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _particle: {instanceID: 0}
+  - _spriteInOn: {fileID: 21300000, guid: 0f88685c3735f274aaba49bc16469b01, type: 3}
+  - _spriteInOff: {fileID: 21300000, guid: ec1d235630f379046a87788a748c83a0, type: 3}
+  - _spriteOutOn: {fileID: 21300000, guid: 8d12b331fef4deb4a9eed086bfdccf2e, type: 3}
+  - _spriteOutOff: {fileID: 21300000, guid: f8d8935b9850df847b49840fcdb65a22, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

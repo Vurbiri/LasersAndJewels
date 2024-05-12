@@ -43,6 +43,46 @@ public abstract class ALevel
 
     public abstract bool CheckChain();
 
+    protected int CheckChain(ILaser laser)
+    {
+        int count = 1, currentType = laser.LaserType;
+
+        Vector2Int direction = laser.Orientation, index = laser.Index, directionOld = -direction;
+        IJewel current = null;
+
+        do
+        {
+            while (IsEmpty(index += direction)) ;
+
+            if (!IsCorrect(index)) break;
+
+            current = this[index];
+            directionOld = direction;
+            direction = current.Orientation;
+        }
+        while (ToVisit(current) && !current.IsEnd);
+
+        int countVisited = count - 1;
+
+        if (current == null || (!current.CheckType(currentType) || (!current.IsEnd && directionOld != -direction)))
+            laser.PositionsRay[count++] = index.ToVector3();
+
+        laser.SetRayPositions(count);
+
+        return countVisited;
+
+        #region Local functions
+        //======================
+        bool ToVisit(IJewel jewel)
+        {
+            if (!jewel.ToVisit(currentType)) return false;
+
+            laser.PositionsRay[count++] = jewel.LocalPosition;
+            return true;
+        }
+        #endregion
+    }
+
     public virtual void Clear()
     {
         _area = new IJewel[_size.x, _size.y];
@@ -58,6 +98,6 @@ public abstract class ALevel
         _jewels.Add(jewel);
     }
 
-    protected bool IsEmpty(Vector2Int index) => _area.IsCorrect(index) && _area[index.x, index.y] == null;
-    protected bool IsCorrect(Vector2Int index) => _area.IsCorrect(index);
+    private bool IsEmpty(Vector2Int index) => _area.IsCorrect(index) && _area[index.x, index.y] == null;
+    private bool IsCorrect(Vector2Int index) => _area.IsCorrect(index);
 }
