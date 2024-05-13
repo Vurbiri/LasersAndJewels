@@ -16,7 +16,7 @@ public abstract class ALevelGenerator
     protected Func<bool> funcIsNotBetween;
 
     protected const int SHIFT_ERROR = 3;
-    protected const int COUNT_ERROR = 35;
+    protected const int COUNT_ERROR = 40;
 
     public ALevelGenerator(Vector2Int size)
     {

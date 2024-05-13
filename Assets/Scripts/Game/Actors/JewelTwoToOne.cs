@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class JewelTwoToOne : MonoBehaviour, ILaser, IJewel, IJewelTo
 {
-    [SerializeField] protected Color[] _colors;
-    [Space]
     [SerializeField] private BorderModule _borderModule;
     [Space]
     [SerializeField] private JewelModule _moduleOut;
@@ -25,6 +23,7 @@ public class JewelTwoToOne : MonoBehaviour, ILaser, IJewel, IJewelTo
 
     public event Action EventSelected;
 
+    protected GlobalColors _colors;
     private Vector3[] _positionsRay;
     private readonly LoopArray<TurnData> _turnData = new(TurnData.Direction);
     private int _countVisited = 0, _idType;
@@ -34,6 +33,8 @@ public class JewelTwoToOne : MonoBehaviour, ILaser, IJewel, IJewelTo
 
     public void Initialize()
     {
+        _colors = GlobalColors.InstanceF;
+
         _jewelCollider.Initialize();
         _jewelCollider.EventClick += OnClick;
         _jewelCollider.IsInteractable = false;

@@ -4,23 +4,15 @@ public class LevelTwo : ALevelTwo
 {
     private Laser _laserTwo;
 
-    public override LevelType Type => LevelType.Two;
-
     protected override int StartFromRandom => 0;
     protected override int EndFromRandom => _count >> 3;
 
-    private const int CHANCE_BASE = 42;
+    public override LevelType Type => LevelType.Two;
 
     public LevelTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new LevelGeneratorTwo(size);
     }
-
-    //public override void Initialize(Vector2Int size, ActorsPool actorsPool)
-    //{
-    //    base.Initialize(size, actorsPool);
-    //    _generator = new(size);
-    //}
 
     public override bool Create(int count, int maxDistance)
     {
@@ -29,6 +21,7 @@ public class LevelTwo : ALevelTwo
         PositionsChainTwo positionsChain = Generate(maxDistance);
         if (positionsChain == null) return false;
 
+        _colorGenerator.GenerateTwo();
         _jewels = new(count);
 
         Spawn(positionsChain.One, ref _laserOne, TYPE_ONE);

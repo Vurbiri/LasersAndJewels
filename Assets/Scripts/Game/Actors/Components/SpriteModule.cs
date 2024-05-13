@@ -12,14 +12,7 @@ public class SpriteModule
     [SerializeField] private Sprite _spriteOff;
 
     private Color _colorOn, _colorOff;
-    private Transform _transform;
-
-    public Quaternion LocalRotation { get => _transform.localRotation; set => _transform.localRotation = value; }
-
-    public void Initialize()
-    {
-        _transform = _spriteRenderer.gameObject.transform;
-    }
+    public Transform Transform => _spriteRenderer.gameObject.transform;
 
     public void Setup(Color color)
     {

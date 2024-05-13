@@ -258,7 +258,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -314,7 +314,7 @@ Camera:
   far clip plane: 10
   field of view: 34
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 4.0007615
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -599,6 +599,55 @@ SortingGroup:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 1
+--- !u!1 &708970674
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 708970676}
+  - component: {fileID: 708970675}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!114 &708970675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708970674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 760412efba686cc468c0cab7eac96cab, type: 2}
+--- !u!4 &708970676
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 708970674}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &764690583
 GameObject:
   m_ObjectHideFlags: 0
@@ -5980,6 +6029,7 @@ GameObject:
   - component: {fileID: 1200530723275584497}
   - component: {fileID: 7634917564896043704}
   - component: {fileID: 7634917564896043705}
+  - component: {fileID: 7634917564896043706}
   m_Layer: 6
   m_Name: GameArea
   m_TagString: Untagged
@@ -6000,9 +6050,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _size: {x: 10, y: 7}
-  _countJewel: 12
+  _countJewel: 20
   _baseMaxDistance: 7
-  _currentType: 3
+  _currentType: 1
 --- !u!114 &7634917564896043705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6024,6 +6074,25 @@ MonoBehaviour:
   _sizePoolLaser: 2
   _prefabJewelTwoToOne: {fileID: 5166837031979411960, guid: 5a5ebc376dbd20c459bb1507eeb11e9f, type: 3}
   _prefabJewelOneToTwo: {fileID: 1515898938924661679, guid: 07358baeac9d5644997d45a088879ad5, type: 3}
+--- !u!114 &7634917564896043706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7634917564896043703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c551294245841264682a54ed69b714a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isNotDestroying: 0
+  _colorDefault: {r: 0.87, g: 0.87, b: 1, a: 1}
+  _colors:
+  - {r: 0.9411765, g: 0.9019608, b: 0.19607843, a: 1}
+  - {r: 0.30588236, g: 0.87058824, b: 0.078431375, a: 1}
+  - {r: 0.02745098, g: 0.627451, b: 0.9529412, a: 1}
+  - {r: 0.9137255, g: 0.3137255, b: 0.21568628, a: 1}
 --- !u!114 &7671191719196118504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7026,3 +7095,4 @@ SceneRoots:
   - {fileID: 1200530723275584497}
   - {fileID: 764690585}
   - {fileID: 1283693830}
+  - {fileID: 708970676}

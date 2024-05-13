@@ -18,7 +18,6 @@ public class JewelModule : MonoBehaviour
     {
         _thisTransform = transform;
         _rotationDefault = transform.rotation;
-        _spriteModule.Initialize();
     }
 
     public void Setup(int idType, Color color) => Setup(idType, color, _rotationDefault);

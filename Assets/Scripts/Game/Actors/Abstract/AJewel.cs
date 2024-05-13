@@ -4,8 +4,8 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
 {
     [SerializeField] protected SpriteModule _spriteModule;
     [SerializeField] private ParticleSystem _particle;
-    [Space]
-    [SerializeField] protected Color[] _colors;
+    //[Space]
+    //[SerializeField] protected Color[] _colors;
     [Space]
     [SerializeField] protected float _brightnessParticle = 1.2f;
 
@@ -18,6 +18,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
 
     private ParticleSystem.MainModule _mainParticle;
 
+    protected GlobalColors _colors;
     protected int _idType;
     protected Vector2Int _index, _orientation;
     protected bool _isOn = true, _isVisited = false, _universalType;
@@ -25,7 +26,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
     public override void Initialize()
     {
         _mainParticle = _particle.main;
-        _spriteModule.Initialize();
+        _colors = GlobalColors.InstanceF;
 
         base.Initialize();
     }

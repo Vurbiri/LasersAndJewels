@@ -5,9 +5,8 @@ public class Laser : APooledObject<Laser>, ILaser
     [SerializeField] private Transform _emitter;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private LineRenderer _laserRay;
-    [Space]
-    [SerializeField] private Color[] _colors;
 
+    private GlobalColors _colors;
     private Vector2Int _index, _orientation;
     private int _idType;
     private Vector3[] _positionsRay;
@@ -16,6 +15,13 @@ public class Laser : APooledObject<Laser>, ILaser
     public Vector2Int Index => _index;
     public Vector2Int Orientation => _orientation;
     public Vector3[] PositionsRay => _positionsRay;
+
+    public override void Initialize()
+    {
+        _colors = GlobalColors.InstanceF;
+
+        base.Initialize();
+    }
 
     public void Setup(LaserSimple laserSimple, int idType, int maxCountRay)
     {

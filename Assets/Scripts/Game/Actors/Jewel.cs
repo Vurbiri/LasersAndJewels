@@ -10,6 +10,7 @@ public class Jewel : AJewel<Jewel>, IMouseClick
 
     private Collider2D _collider;
     private readonly LoopArray<TurnData> _turnData = new(TurnData.Direction);
+    private Transform _transformSprite;
 
     public override bool IsEnd => false;
 
@@ -18,6 +19,7 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     public override void Initialize()
     {
         _collider = GetComponent<Collider2D>();
+        _transformSprite = _spriteModule.Transform;
 
         _collider.enabled = false;
         base.Initialize();
@@ -47,7 +49,7 @@ public class Jewel : AJewel<Jewel>, IMouseClick
 
     private void Turn(TurnData turnData)
     {
-        _spriteModule.LocalRotation = turnData.Turn;
+        _transformSprite.localRotation = turnData.Turn;
         _orientation = turnData.Orientation;
     }
 

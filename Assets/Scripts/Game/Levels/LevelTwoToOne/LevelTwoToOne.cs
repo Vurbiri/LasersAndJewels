@@ -9,8 +9,6 @@ public class LevelTwoToOne : ALevelTwo
 
     public override LevelType Type => LevelType.TwoToOne;
 
-    protected const int CHANCE_BASE = 45;
-
     public LevelTwoToOne(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new LevelGeneratorTwoToOne(size);
@@ -22,37 +20,25 @@ public class LevelTwoToOne : ALevelTwo
         PositionsChainTwo positionsChain = Generate(maxDistance);
         if (positionsChain == null) return false;
 
+        _colorGenerator.GenerateThree();
         _count = positionsChain.One.Count + positionsChain.Two.Count + 2;
         _jewels = new(_count);
 
         int connect = positionsChain.Branch.Connect;
         PositionsChainOne jChain = positionsChain.One;
         _laserOne = _actorsPool.GetLaser(jChain.Laser, TYPE_ONE, _count);
-        Spawn(jChain, 0, connect, TYPE_ONE, false, true);
+        SpawnPartChain(jChain, 0, connect, TYPE_ONE, false, true);
 
         Add(_jewelTwoToOne = _actorsPool.GetJewelTwoToOne(positionsChain.Branch, TYPE_THREE, TYPE_ONE, TYPE_TWO, _count));
-        Spawn(jChain, connect + 1, jChain.Count, TYPE_THREE, true);
+        SpawnPartChain(jChain, connect + 1, jChain.Count, TYPE_THREE, true);
         Add(_actorsPool.GetJewelEnd(jChain.End, TYPE_THREE));
 
         jChain = positionsChain.Two;
         _laserTwo = _actorsPool.GetLaser(jChain.Laser, TYPE_TWO, _count);
-        Spawn(jChain, 0, jChain.Count , TYPE_TWO);
+        SpawnPartChain(jChain, 0, jChain.Count , TYPE_TWO);
         Add(_actorsPool.GetJewel(jChain.End, 0, positionsChain.Two.Count + 1, TYPE_TWO));
 
         return true;
-
-        #region Local function
-        //======================
-        void Spawn(PositionsChainOne chain, int start, int end, int type, bool zeroStart = false, bool zeroEnd = false)
-        {
-            int chance = CHANCE_BASE - (end - start);
-            for (int i = start, k = 1; i < end; i++, k++)
-                Add(_actorsPool.GetJewel(chain.Jewels[i], TypeLogic(i), k, type));
-
-            //======================
-            int TypeLogic(int i) => !(URandom.IsTrue(chance) || (i == start && !zeroStart)) || (i == start && zeroStart) || (i == end - 1 && zeroEnd) ? 0 : type;
-        }
-        #endregion
     }
 
     public override bool CheckChain()

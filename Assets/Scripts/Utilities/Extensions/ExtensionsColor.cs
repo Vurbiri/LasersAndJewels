@@ -3,30 +3,31 @@ using UnityEngine;
 
 public static class ExtensionsColor
 {
-    public static void Randomize(this ref Color self, float saturationMin = 0.15f, float brightnessMin = 0.15f)
+    public static Color Randomize(this ref Color self, float saturationMin, float brightnessMin, float brightnessMax)
     {
         float saturation, brightness;
         do
         {
-            self.r = Random.value;
-            self.g = Random.value;
-            self.b = Random.value;
+            for (int i = 0; i < 3; i++)
+                self[i] = Random.Range(0, 256) / 255f;
 
             brightness = self.maxColorComponent;
             saturation = brightness == 0 ? 0 : (1f - Mathf.Min(self.r, self.g, self.b) / brightness);
         }
-        while (saturation <= saturationMin || brightness <= brightnessMin);
+        while (saturation <= saturationMin || brightness <= brightnessMin || brightness > brightnessMax);
 
         self.a = 1f;
+
+        return self;
     }
 
     public static bool IsSimilar(this Color self, Color other, float variance = 0.025f) => Mathf.Abs(self.r - other.r) < variance && Mathf.Abs(self.g - other.g) < variance && Mathf.Abs(self.b - other.b) < variance;
 
     public static Color Brightness(this Color self, float brightness)
     {
-        self.r = Mathf.Clamp01(self.r * brightness);
-        self.g = Mathf.Clamp01(self.g * brightness);
-        self.b = Mathf.Clamp01(self.b * brightness);
+        for (int i = 0; i < 3; i++)
+            self[i] = Mathf.Clamp01(self[i] * brightness);
+
         self.a = 1f;
         return self;
     }

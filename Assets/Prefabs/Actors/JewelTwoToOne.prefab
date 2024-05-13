@@ -103,13 +103,13 @@ MonoBehaviour:
     _spriteRenderer: {fileID: 7320255950020389229}
     _alfaOn: 1
     _spriteOn: {fileID: 21300000, guid: 167666e71e55c9a4dbaba12d8ae1a1b5, type: 3}
-    _alfaOff: 0.9
+    _alfaOff: 0.8
     _spriteOff: {fileID: 21300000, guid: 84676aea84f7c6342ba5ab769e8861ba, type: 3}
   _borderB:
     _spriteRenderer: {fileID: 8803495019939134417}
     _alfaOn: 1
     _spriteOn: {fileID: 21300000, guid: f1bb09bde1a3ff344a6703b4627b76a6, type: 3}
-    _alfaOff: 0.9
+    _alfaOff: 0.8
     _spriteOff: {fileID: 21300000, guid: 467d2aac2b26fbf49a00e1a695c47eae, type: 3}
 --- !u!1 &2548240021344272376
 GameObject:
