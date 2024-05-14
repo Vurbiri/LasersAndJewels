@@ -1,13 +1,15 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
 {
     [SerializeField] protected SpriteModule _spriteModule;
     [SerializeField] private ParticleSystem _particle;
-    //[Space]
-    //[SerializeField] protected Color[] _colors;
     [Space]
     [SerializeField] protected float _brightnessParticle = 1.2f;
+    [Space]
+    [SerializeField] private Vector2 _timeShowHide = new(0.5f, 1.5f);
 
     public virtual int IdType => _idType;
     public virtual bool IsVisited { get => _isVisited; set => _isVisited = value; }
@@ -41,16 +43,37 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _mainParticle.startColor = color.Brightness(_brightnessParticle);
         _spriteModule.Setup(color);
 
-        _isOn = true;
+        _thisTransform.localPosition = _index.ToVector3();
+
+        _isOn = false;
         _isVisited = false;
     }
 
     public virtual void Run()
     {
-        _thisTransform.localPosition = _index.ToVector3();
-        Off();
         Activate();
     }
+
+    public WaitActivate Run_Wait()
+    {
+        WaitActivate wait = new();
+        Activate();
+        StartCoroutine(Run_Coroutine());
+        return wait;
+
+        #region Local function
+        //=================================
+        IEnumerator Run_Coroutine()
+        {
+            yield return new WaitForSecondsRealtime(URandom.Range(_timeShowHide));
+            yield return StartCoroutine(_spriteModule.Appear());
+            Run_Wait_FinalAction();
+            wait.Activate();
+        }
+        #endregion
+    }
+
+    protected virtual void Run_Wait_FinalAction() { }
 
     public bool ToVisit(int idType)
     {
@@ -69,6 +92,22 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
             Off();
 
         _isVisited = false;
+    }
+
+    public override void Deactivate()
+    {
+        Off();
+        base.Deactivate();
+    }
+
+    public virtual IEnumerator Deactivate_Coroutine()
+    {
+        yield return new WaitForSecondsRealtime(URandom.Range(_timeShowHide));
+        _particle.Stop();
+        _particle.Clear();
+        yield return StartCoroutine(_spriteModule.Fade());
+
+        base.Deactivate();
     }
 
     protected abstract void On(bool isLevelComplete);
@@ -90,6 +129,4 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _particle.Stop();
         _particle.Clear();
     }
-
-    
 }

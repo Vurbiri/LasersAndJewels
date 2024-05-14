@@ -38,7 +38,6 @@ public class LevelOneToTwo : ALevelTwo
 
         return true;
     }
-        
 
     public override bool CheckChain()
     {

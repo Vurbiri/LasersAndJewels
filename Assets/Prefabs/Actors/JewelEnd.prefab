@@ -371,7 +371,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.4
+      scalar: 0.35
       minScalar: 0.15
       maxCurve:
         serializedVersion: 2
@@ -4966,5 +4966,7 @@ MonoBehaviour:
     _spriteOn: {fileID: 21300000, guid: 941ffbdfcf5c4ad42804e6404888ac5a, type: 3}
     _alfaOff: 0.7
     _spriteOff: {fileID: 21300000, guid: 5ddd8bc1c9d94b64090cf6bfd414f76d, type: 3}
+    _durationShowHide: 1
   _particle: {fileID: 2466002474862386052}
   _brightnessParticle: 1.2
+  _timeShowHide: {x: 0.5, y: 1.5}

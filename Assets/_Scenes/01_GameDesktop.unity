@@ -314,7 +314,7 @@ Camera:
   far clip plane: 10
   field of view: 34
   orthographic: 1
-  orthographic size: 4.0007615
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -6050,9 +6050,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _size: {x: 10, y: 7}
-  _countJewel: 20
+  _countJewel: 45
   _baseMaxDistance: 7
-  _currentType: 1
+  _currentType: 0
 --- !u!114 &7634917564896043705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6093,6 +6093,7 @@ MonoBehaviour:
   - {r: 0.30588236, g: 0.87058824, b: 0.078431375, a: 1}
   - {r: 0.02745098, g: 0.627451, b: 0.9529412, a: 1}
   - {r: 0.9137255, g: 0.3137255, b: 0.21568628, a: 1}
+  _chanceColorDefaultForOne: 10
 --- !u!114 &7671191719196118504
 MonoBehaviour:
   m_ObjectHideFlags: 0

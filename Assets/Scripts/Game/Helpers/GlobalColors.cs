@@ -5,6 +5,8 @@ public class GlobalColors : ASingleton<GlobalColors>
     [Space]
     [SerializeField] private Color _colorDefault = new(0.87f, 0.87f, 1f , 1f);
     [SerializeField] private Color[] _colors;
+    [Space]
+    [SerializeField] private int _chanceColorDefaultForOne = 10;
 
     private readonly Color[] _colorsRandom = new Color[4];
     private readonly int[] _indexes = new int[3];
@@ -22,7 +24,7 @@ public class GlobalColors : ASingleton<GlobalColors>
 
     public void GenerateOne()
     {
-        _colorsRandom[0] = URandom.IsTrue(10) ? _colorDefault : _colors.Rand();
+        _colorsRandom[0] = URandom.IsTrue(_chanceColorDefaultForOne) ? _colorDefault : _colors.Rand();
     }
 
     public void GenerateTwo()
@@ -46,7 +48,7 @@ public class GlobalColors : ASingleton<GlobalColors>
         }
 
         #region Local functions
-        ////======================
+        //======================
         bool CreateIndex(int max)
         {
             _indexes[max] = Random.Range(0, _count);

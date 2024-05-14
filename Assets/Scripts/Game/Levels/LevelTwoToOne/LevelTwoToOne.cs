@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class LevelTwoToOne : ALevelTwo
@@ -47,7 +48,7 @@ public class LevelTwoToOne : ALevelTwo
         if (_jewelTwoToOne.IsVisited)
             count += CheckChain(_jewelTwoToOne);
         else
-            _jewelTwoToOne.SetRayPositions(0);
+            _jewelTwoToOne.ResetRays();
 
         bool isLevelComplete = count == _count;
         foreach (IJewel jewel in _jewels)
@@ -62,10 +63,25 @@ public class LevelTwoToOne : ALevelTwo
         base.Run();
     }
 
+    public override IEnumerator Run_Coroutine()
+    {
+        _laserTwo.Run();
+        return base.Run_Coroutine();
+    }
+
     public override void Clear()
     {
         base.Clear();
         _laserTwo.Deactivate();
+        _laserTwo = null;
+    }
+
+    public override IEnumerator Clear_Coroutine()
+    {
+        WaitAll waitAll = new(_actorsPool);
+        waitAll.Add(base.Clear_Coroutine());
+        waitAll.Add(_laserTwo.Deactivate_Coroutine());
+        yield return waitAll;
         _laserTwo = null;
     }
 }

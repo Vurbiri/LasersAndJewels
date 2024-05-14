@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Laser : APooledObject<Laser>, ILaser
@@ -5,6 +6,8 @@ public class Laser : APooledObject<Laser>, ILaser
     [SerializeField] private Transform _emitter;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private LineRenderer _laserRay;
+    [SerializeField] private float _alfaRay = 0.85f;
+    [SerializeField] private float _durationHide = 1f;
 
     private GlobalColors _colors;
     private Vector2Int _index, _orientation;
@@ -34,15 +37,16 @@ public class Laser : APooledObject<Laser>, ILaser
         _positionsRay = new Vector3[maxCountRay];
 
         Color color = _colors[_idType];
-        _laserRay.startColor = _laserRay.endColor = color;
+        _laserRay.startColor = _laserRay.endColor = color.SetAlpha(_alfaRay);
         _spriteRenderer.color = color;
+
+        _emitter.localPosition = _index.ToVector3();
+        _emitter.rotation = TurnData.TurnFromOrientation(_orientation);
+        _positionsRay[0] = _emitter.localPosition;
     }
 
     public void Run()
     {
-        _emitter.localPosition = _index.ToVector3();
-        _emitter.rotation = TurnData.TurnFromOrientation(_orientation);
-        _positionsRay[0] = _emitter.localPosition;
         Activate();
     }
 
@@ -57,4 +61,22 @@ public class Laser : APooledObject<Laser>, ILaser
         _laserRay.positionCount = 0;
         base.Deactivate();
     }
+
+    public IEnumerator Deactivate_Coroutine()
+    {
+        Color color = _laserRay.startColor;
+        float alpha, currentTime = 0f, start = color.a;
+        
+        while (currentTime < _durationHide)
+        {
+            alpha = Mathf.Lerp(start, 0f, currentTime / _durationHide);
+            _laserRay.startColor = _laserRay.endColor = color.SetAlpha(alpha);
+            currentTime += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        _laserRay.positionCount = 0;
+        base.Deactivate();
+    }
+
 }

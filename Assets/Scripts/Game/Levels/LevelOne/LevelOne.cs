@@ -6,8 +6,6 @@ public class LevelOne : ALevel
 
     public override LevelType Type => LevelType.One;
 
-    protected const int CHANCE_ZERO = 10;
-
     public LevelOne(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new(size);
@@ -18,19 +16,18 @@ public class LevelOne : ALevel
         PositionsChainOne positionsChain = Generate();
         if (positionsChain == null) return false;
 
-        int type = TYPE_ZERO;
         _colorGenerator.GenerateOne();
 
         _count = count;
         _jewels = new(count);
 
-        _laserOne = _actorsPool.GetLaser(positionsChain.Laser, type, count + 1);
+        _laserOne = _actorsPool.GetLaser(positionsChain.Laser, TYPE_ZERO, count + 1);
 
         count = 1;
         foreach (var jewel in positionsChain.Jewels)
-            Add(_actorsPool.GetJewel(jewel, type, count++, type));
+            Add(_actorsPool.GetJewel(jewel, TYPE_ZERO, count++, TYPE_ZERO));
 
-        Add(_actorsPool.GetJewelEnd(positionsChain.End, type));
+        Add(_actorsPool.GetJewelEnd(positionsChain.End, TYPE_ZERO));
 
         return true;
 

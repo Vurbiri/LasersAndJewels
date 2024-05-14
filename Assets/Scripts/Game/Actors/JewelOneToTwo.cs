@@ -1,61 +1,38 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
-public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
+public class JewelOneToTwo : AJewelTo
 {
-    [SerializeField] private BorderModule _borderModule;
     [Space]
     [SerializeField] private LaserModule _moduleOutA;
     [SerializeField] private LaserModule _moduleOutB;
     [Space]
-    [SerializeField] private JewelModule _moduleIn;
+    [SerializeField] private float _alfaRay = 0.85f;
+    [SerializeField] private float _durationHideRays = 1f;
     [Space]
-    [SerializeField] private JewelCollider _jewelCollider;
-
+    [SerializeField] private JewelModule _moduleIn;
 
     public ILaser LaserOne => _moduleOutA;
     public ILaser LaserTwo => _moduleOutB;
 
     public int IdType => _idType;
-    public bool IsEnd => true;
-    public bool IsVisited { get => _moduleIn.IsVisited; set => _moduleIn.IsVisited = value; }
-    public Vector2Int Index => _index;
-    public Vector2Int Orientation => _orientation;
-    public Vector3 LocalPosition => _position;
+    public override bool IsVisited { get => _moduleIn.IsVisited; set => _moduleIn.IsVisited = value; }
 
-    public event Action EventSelected;
-
-    protected GlobalColors _colors;
-    private readonly LoopArray<TurnData> _turnData = new(TurnData.Direction);
-    private int _idType;
-    private Vector2Int _index, _orientation;
-    private Vector3 _position;
-    private bool _isOn = true;
-
-    public void Initialize()
+    public override void Initialize()
     {
-        _colors = GlobalColors.InstanceF;
+        base.Initialize();
 
-        _jewelCollider.Initialize();
-        _jewelCollider.EventClick += OnClick;
-        _jewelCollider.IsInteractable = false;
-
-        _moduleOutA.Initialize();
-        _moduleOutB.Initialize();
+        _moduleOutA.Initialize(_alfaRay);
+        _moduleOutB.Initialize(_alfaRay);
         _moduleIn.Initialize();
-
-        transform.localPosition = Vector3.zero;
-        gameObject.SetActive(false);
     }
 
     public void Setup(BranchData data, int typeOutA, int typeOutB, int typeIn, int maxCountRay)
     {
-        _idType = typeIn;
-        _index = data.Index;
-        
-        _position = data.Position;
+        BaseSetup(data, typeIn);
+
         _jewelCollider.LocalPosition = _position;
-        Turn(_turnData.Default);
 
         _borderModule.Setup(_colors[typeOutA], _colors[typeOutB]);
 
@@ -63,31 +40,21 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
         _moduleOutB.Setup(_index, data.OrientationTwo, typeOutB, _colors[typeOutB], maxCountRay);
         _moduleIn.Setup(typeIn, _colors[typeIn]);
 
-        _isOn = true;
         IsVisited = false;
-    }
-
-    public void Run()
-    {
-        _moduleOutA.Run();
-        _moduleOutB.Run();
 
         Off();
-
-        gameObject.SetActive(true);
-        _jewelCollider.IsInteractable = true;
     }
 
-    public bool ToVisit(int idType)
+    public override bool ToVisit(int idType)
     {
         if (IsVisited) return false;
 
         return IsVisited = CheckType(idType);
     }
 
-    public bool CheckType(int idType) => idType == _idType;
+    public override bool CheckType(int idType) => idType == _idType;
 
-    public void Switch(bool isLevelComplete)
+    public override void Switch(bool isLevelComplete)
     {
         if (IsVisited)
             On(isLevelComplete);
@@ -99,10 +66,25 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
         IsVisited = false;
     }
 
-    public void ResetRays()
+    public override void ResetRays() => DeactivateModules();
+
+    public override void Deactivate()
     {
-        _moduleOutA.SetRayPositions(0);
-        _moduleOutB.SetRayPositions(0);
+        DeactivateModules();
+        gameObject.SetActive(false);
+    }
+
+    public override IEnumerator Deactivate_Coroutine()
+    {
+        StartCoroutine(_moduleOutA.Deactivate_Coroutine(_durationHideRays));
+        yield return StartCoroutine(_moduleOutB.Deactivate_Coroutine(_durationHideRays));
+        gameObject.SetActive(false);
+    }
+
+    private void DeactivateModules()
+    {
+        _moduleOutA.Deactivate();
+        _moduleOutB.Deactivate();
     }
 
     private void On(bool isLevelComplete)
@@ -117,7 +99,7 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
         _borderModule.On();
     }
 
-    private void Off()
+    protected override void Off()
     {
         if (!_isOn) return;
 
@@ -127,13 +109,7 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
         _borderModule.Off();
     }
 
-    private void Turn(TurnData turnData)
-    {
-        _jewelCollider.Rotation = turnData.Turn;
-        _orientation = turnData.Orientation;
-    }
-
-    private void OnClick(bool isLeft)
+    protected override void OnClick(bool isLeft)
     {
         if(isLeft) 
         {
@@ -147,16 +123,8 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
             _moduleOutA.Turn90Right();
             _moduleOutB.Turn90Right();
         }
-        //Turn(isLeft ? _turnData.Back : _turnData.Forward);
 
-        if (_isOn) EventSelected?.Invoke();
-    }
-
-    public void Deactivate()
-    {
-        _moduleOutA.Deactivate();
-        _moduleOutB.Deactivate();
-        gameObject.SetActive(false);
+        base.OnClick(isLeft);
     }
 
     #region Nested Classe
@@ -166,16 +134,22 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
     {
         [SerializeField] private JewelModule _module;
         [SerializeField] private LineRenderer _laserRay;
+        
 
         private Vector2Int _index, _orientation;
         private Vector3[] _positionsRay;
+        private float _alfaRay = 0.85f;
 
         public int LaserType => _module.IdType;
         public Vector2Int Index => _index;
         public Vector2Int Orientation => _orientation;
         public Vector3[] PositionsRay => _positionsRay;
 
-        public void Initialize() => _module.Initialize();
+        public void Initialize(float alfaRay)
+        {
+            _alfaRay = alfaRay;
+            _module.Initialize();
+        }
 
         public void Setup(Vector2Int index, Vector2Int orientation, int idType, Color color, int maxCountRay)
         {
@@ -184,14 +158,9 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
 
             _positionsRay = new Vector3[maxCountRay];
 
-            _laserRay.startColor = _laserRay.endColor = color;
+            _laserRay.startColor = _laserRay.endColor = color.SetAlpha(_alfaRay); ;
             _module.Setup(idType, color, orientation);
 
-            //Debug.Log(_orientation);
-        }
-
-        public void Run()
-        {
             _positionsRay[0] = _index.ToVector3();
         }
 
@@ -209,6 +178,22 @@ public class JewelOneToTwo : MonoBehaviour, IJewel, IJewelTo
 
         public void Deactivate()
         {
+            _laserRay.positionCount = 0;
+        }
+
+        public IEnumerator Deactivate_Coroutine(float durationHide)
+        {
+            Color color = _laserRay.startColor;
+            float alpha, currentTime = 0f, start = color.a;
+
+            while (currentTime < durationHide)
+            {
+                alpha = Mathf.Lerp(start, 0f, currentTime / durationHide);
+                _laserRay.startColor = _laserRay.endColor = color.SetAlpha(alpha);
+                currentTime += Time.unscaledDeltaTime;
+                yield return null;
+            }
+
             _laserRay.positionCount = 0;
         }
     }

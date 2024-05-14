@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     {
         _collider = GetComponent<Collider2D>();
         _transformSprite = _spriteModule.Transform;
+        _textCount.gameObject.SetActive(false);
 
         _collider.enabled = false;
         base.Initialize();
@@ -31,13 +33,34 @@ public class Jewel : AJewel<Jewel>, IMouseClick
 
         _textCount.text = count.ToString();
         _textCount.color = _colors[group].Brightness(_brightnessParticle);
+        
+
+        Turn(_turnData.Default);
     }
 
     public override void Run()
     {
-        Turn(_turnData.Default);
         base.Run();
         _collider.enabled = true;
+    }
+
+    protected override void Run_Wait_FinalAction()
+    {
+        _collider.enabled = true;
+        //_textCount.gameObject.SetActive(true);
+    }
+
+    public override void Deactivate()
+    {
+        _textCount.gameObject.SetActive(false);
+        base.Deactivate();
+    }
+
+    public override IEnumerator Deactivate_Coroutine()
+    {
+        _textCount.gameObject.SetActive(false);
+
+        return base.Deactivate_Coroutine();
     }
 
     protected override void On(bool isLevelComplete)

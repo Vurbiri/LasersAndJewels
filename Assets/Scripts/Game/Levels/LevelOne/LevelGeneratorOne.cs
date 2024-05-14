@@ -6,5 +6,4 @@ public class LevelGeneratorOne : ALevelGenerator
 
     public PositionsChainOne Generate(int count, int maxDistance) => GenerateBase(count, maxDistance) ? new(_laserCurrent, _jewelsCurrent) : null;
 
-
 }

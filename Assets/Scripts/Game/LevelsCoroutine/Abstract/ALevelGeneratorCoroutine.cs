@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public abstract class ALevelGenerator
+public abstract class ALevelGeneratorCoroutine
 {
     protected readonly Vector2Int _size;
 
@@ -12,18 +13,20 @@ public abstract class ALevelGenerator
     protected LaserSimple _laserCurrent;
     protected int _countCurrent, _maxDistance = 8;
     protected Vector2Int _indexCurrent, _excluding;
+    protected MonoBehaviour _mono;
     protected Func<bool> funcIsNotBetween;
 
     protected const int SHIFT_ERROR = 3;
     protected const int COUNT_ERROR = 40;
 
-    public ALevelGenerator(Vector2Int size)
+    public ALevelGeneratorCoroutine(Vector2Int size, MonoBehaviour mono)
     {
         _size = size;
+        _mono = mono;
         funcIsNotBetween = IsNotBetweenOne;
     }
 
-    protected bool GenerateBase(int count, int maxDistance)
+    protected WaitResult<bool> GenerateBase_Wait(int count, int maxDistance)
     {
         _area = new bool[_size.x, _size.y];
         _maxDistance = maxDistance;
@@ -39,9 +42,9 @@ public abstract class ALevelGenerator
 
         Add();
         _laserCurrent = new(_indexCurrent, -_excluding);
-        while (IsEmpty(_laserCurrent.Move()));
+        while (IsEmpty(_laserCurrent.Move())) ;
 
-        return GenerateChain();
+        return GenerateChain_Wait();
 
         #region Local functions
         //======================
@@ -74,29 +77,45 @@ public abstract class ALevelGenerator
         #endregion
     }
 
-    protected bool GenerateChain()
+    protected WaitResult<bool> GenerateChain_Wait()
     {
-        bool result = false;
-        int error = 0, count;
-        while (_jewelsCurrent.Count < _countCurrent && error < COUNT_ERROR)
+        WaitResult<bool> waitResult = new();
+        _mono.StartCoroutine(GenerateChain_Coroutine());
+        return waitResult;
+
+        #region Local function
+        //=================================
+        IEnumerator GenerateChain_Coroutine()
         {
-            if (result = TryAdd())
+            bool result = false;
+            int error = 0, count;
+            while (_jewelsCurrent.Count < _countCurrent && error < COUNT_ERROR)
             {
-                Add();
-                continue;
+                yield return null;
+
+                if (result = TryAdd())
+                {
+                    Add();
+                    continue;
+                }
+
+                error++;
+                count = Mathf.Min((error >> SHIFT_ERROR) + 1, _jewelsCurrent.Count);
+                for (int i = 0; i < count; i++)
+                    RemoveLast();
+
+                if (_jewelsCurrent.Count < 2)
+                {
+                    waitResult.SetResult(false);
+                    yield break;
+                }
+
+                _excluding = _jewelsCurrent[^2] - _jewelsCurrent[^1];
             }
 
-            error++;
-            count = Mathf.Min((error >> SHIFT_ERROR) + 1, _jewelsCurrent.Count);
-            for (int i = 0; i < count; i++)
-                RemoveLast();
-
-            if (_jewelsCurrent.Count < 2) return false;
-
-            _excluding = _jewelsCurrent[^2] - _jewelsCurrent[^1];
+            waitResult.SetResult(result);
         }
-
-        return result;
+        #endregion
     }
 
     protected bool TryAdd()
@@ -121,7 +140,7 @@ public abstract class ALevelGenerator
 
         Vector2Int end = start;
         int steps = _maxDistance;
-        while (IsEmpty(end += direction) && --steps > 0);
+        while (IsEmpty(end += direction) && --steps > 0) ;
 
         _indexCurrent = URandom.Vector2Int(start, end);
         if (funcIsNotBetween())

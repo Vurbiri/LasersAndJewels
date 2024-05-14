@@ -133,11 +133,8 @@ MonoBehaviour:
   _emitter: {fileID: 2514178926956970615}
   _spriteRenderer: {fileID: 4966500957111046957}
   _laserRay: {fileID: 7898275797231064366}
-  _colors:
-  - {r: 0.87058824, g: 0.87058824, b: 1, a: 1}
-  - {r: 0.827451, g: 1, b: 0.1764706, a: 1}
-  - {r: 0.50980395, g: 0.50980395, b: 0.9137255, a: 1}
-  - {r: 0.92156863, g: 0.3254902, b: 0.14117648, a: 1}
+  _alfaRay: 0.85
+  _durationHide: 1
 --- !u!1 &8818508101579707966
 GameObject:
   m_ObjectHideFlags: 0

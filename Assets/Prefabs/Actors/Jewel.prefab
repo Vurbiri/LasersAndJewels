@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5056315686552301462
 RectTransform:
   m_ObjectHideFlags: 0
@@ -300,8 +300,10 @@ MonoBehaviour:
     _spriteOn: {fileID: 21300000, guid: b4e7c5edd9997ea43b6491e85a4c579a, type: 3}
     _alfaOff: 0.65
     _spriteOff: {fileID: 21300000, guid: 80dd7e9d76eba294ea516ec90ab653d8, type: 3}
+    _durationShowHide: 1
   _particle: {fileID: 4494390942368735012}
   _brightnessParticle: 1.2
+  _timeShowHide: {x: 0.5, y: 1.5}
   _textCount: {fileID: 9017782455064332976}
 --- !u!58 &6604037502627985095
 CircleCollider2D:

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class LevelTwo : ALevelTwo
@@ -48,6 +49,12 @@ public class LevelTwo : ALevelTwo
         base.Run();
     }
 
+    public override IEnumerator Run_Coroutine()
+    {
+        _laserTwo.Run();
+        return base.Run_Coroutine();
+    }
+
     public override bool CheckChain()
     {
         bool isLevelComplete = CheckChain(_laserOne) + CheckChain(_laserTwo) == _count;
@@ -62,6 +69,15 @@ public class LevelTwo : ALevelTwo
     {
         base.Clear();
         _laserTwo.Deactivate();
+        _laserTwo = null;
+    }
+
+    public override IEnumerator Clear_Coroutine()
+    {
+        WaitAll waitAll = new(_actorsPool);
+        waitAll.Add(base.Clear_Coroutine());
+        waitAll.Add(_laserTwo.Deactivate_Coroutine());
+        yield return waitAll;
         _laserTwo = null;
     }
 }

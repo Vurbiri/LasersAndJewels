@@ -89,7 +89,7 @@ public class ActorsPool : MonoBehaviour
         }
     }
     //***********************************
-    private class PoolJewelTo<T> where T : MonoBehaviour, IJewelTo
+    private class PoolJewelTo<T> where T : AJewelTo
     {
         private readonly T _gameObject;
 

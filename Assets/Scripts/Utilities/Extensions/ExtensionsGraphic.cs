@@ -18,7 +18,8 @@ public static class ExtensionsGraphic
        else
             return self.StartCoroutine(SmoothAlpha_Coroutine(self, color, 1f, 0f, duration));
     }
-private static IEnumerator SmoothAlpha_Coroutine(Graphic graphic, Color color, float start, float end, float duration)
+
+    private static IEnumerator SmoothAlpha_Coroutine(Graphic graphic, Color color, float start, float end, float duration)
     {
         float currentTime = 0f;
         float alpha;

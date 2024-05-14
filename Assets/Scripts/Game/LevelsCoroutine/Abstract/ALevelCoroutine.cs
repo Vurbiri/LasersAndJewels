@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ALevel
+public abstract class ALevelCoroutine
 {
     protected readonly GlobalColors _colorGenerator;
     protected readonly ActorsPool _actorsPool;
@@ -21,7 +21,7 @@ public abstract class ALevel
     protected const int TYPE_ZERO = 0, TYPE_ONE = 1, TYPE_TWO = 2, TYPE_THREE = 3;
     protected const int CHANCE_BASE = 35;
 
-    public ALevel(Vector2Int size, ActorsPool actorsPool)
+    public ALevelCoroutine(Vector2Int size, ActorsPool actorsPool)
     {
         _size = size;
         _area = new IJewel[size.x, size.y];
@@ -29,15 +29,8 @@ public abstract class ALevel
         _colorGenerator = GlobalColors.InstanceF;
     }
 
-    public abstract bool Create(int count, int maxDistance);
-    //public abstract WaitResult<bool> Create_Wait(int count, int maxDistance);
-
-    public virtual void Run()
-    {
-        _laserOne.Run();
-        _jewels.ForEach((j) => j.Run());
-        CheckChain();
-    }
+    public abstract WaitResult<bool> Generate_Wait(int count, int maxDistance);
+    public abstract void Create();
 
     public virtual IEnumerator Run_Coroutine()
     {
@@ -59,7 +52,7 @@ public abstract class ALevel
 
         do
         {
-            while (IsEmpty(index += direction));
+            while (IsEmpty(index += direction)) ;
 
             if (!IsCorrect(index)) break;
 

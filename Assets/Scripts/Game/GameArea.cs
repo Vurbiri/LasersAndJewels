@@ -11,7 +11,7 @@ public class GameArea : MonoBehaviour
     [SerializeField] private LevelType _currentType = LevelType.TwoToOne;
 
     private readonly Dictionary<LevelType, ALevel> _levels = new(3);
-    private ALevel _currentLevel;
+    private ALevelCoroutine _currentLevel;
 
     private void Awake()
     {
@@ -23,17 +23,28 @@ public class GameArea : MonoBehaviour
         _levels.Add(LevelType.TwoToOne, new LevelTwoToOne(_size, actorsPool));
         _levels.Add(LevelType.OneToTwo, new LevelOneToTwo(_size, actorsPool));
 
-        _currentLevel = _levels[_currentType];
+        //_currentLevel = _levels[_currentType];
+
+        _currentLevel = new LevelOneCoroutine(_size, actorsPool);
     }
 
-    private void Start()
+    //private void Start()
+    //{
+    //    int count = _countJewel;
+    //    while (!_currentLevel.Create(count--, _baseMaxDistance - (count >> 3)));
+
+    //    StartCoroutine(_currentLevel.Run_Coroutine());
+    //}
+
+    private IEnumerator Start()
     {
         int count = _countJewel;
-        while (!_currentLevel.Create(count--, _baseMaxDistance - (count >> 3)));
-
-        //Debug.Log(count);
-
-        _currentLevel.Run();
+        WaitResult<bool> waitResult;
+        do
+        yield return waitResult = _currentLevel.Generate_Wait(count--, _baseMaxDistance - (count >> 3));
+        while (!waitResult.Result);
+        _currentLevel.Create();
+        StartCoroutine(_currentLevel.Run_Coroutine());
     }
 
     private void OnSelected()
@@ -46,13 +57,13 @@ public class GameArea : MonoBehaviour
     {
         Debug.Log("-=/ Level complete \\=-");
         yield return new WaitForSecondsRealtime(2f);
-        _currentLevel.Clear();
+        yield return StartCoroutine(_currentLevel.Clear_Coroutine());
         Start();
     }
 
 
 #if UNITY_EDITOR
-    public void OnDrawGizmosSelected()
+    public void OnDrawGizmos()
     {
         Gizmos.matrix = Matrix4x4.identity;
         Gizmos.color = Color.red;
