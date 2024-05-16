@@ -2,52 +2,61 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ALevelGeneratorTwoCoroutine : ALevelGeneratorCoroutine
+public abstract class ALevelGeneratorTwoC : ALevelGeneratorC
 {
     protected LaserSimple _laserOne;
     protected List<Vector2Int> _jewelsOne;
     protected BranchData _branchData;
 
-    public ALevelGeneratorTwoCoroutine(Vector2Int size, MonoBehaviour mono) : base(size, mono) { }
+    public ALevelGeneratorTwoC(Vector2Int size, MonoBehaviour mono) : base(size, mono) { }
 
-    public abstract PositionsChainTwo Generate(int countOne, int countTwo, int maxDistance);
+    public abstract WaitResult<PositionsChainTwo> Generate_Wait(int countOne, int countTwo, int maxDistance);
 
-    protected virtual bool SetupTwo(int count)
+    protected virtual WaitResult<bool> SetupTwo_Wait(int count)
     {
-        if (!Branch()) return false;
+        WaitResult<bool> waitResult = new();
+        _mono.StartCoroutine(SetupTwo_Coroutine());
+        return waitResult;
 
-        funcIsNotBetween = IsNotBetweenTwo;
+        #region Local: SetupTwo_Coroutine(), Branch_Coroutine()
+        IEnumerator SetupTwo_Coroutine()
+        {
+            yield return _mono.StartCoroutine(Branch_Coroutine());
+            if (!waitResult.keepWaiting)
+                yield break;
 
-        _laserOne = _laserCurrent;
-        _jewelsOne = _jewelsCurrent;
+            funcIsNotBetween = IsNotBetweenTwo;
 
-        _countCurrent = count;
-        _laserCurrent = new(_jewelsCurrent[_branchData.Connect], Vector2Int.zero);
-        _jewelsCurrent = new(count);
+            _laserOne = _laserCurrent;
+            _jewelsOne = _jewelsCurrent;
 
-        Add();
+            _countCurrent = count;
+            _laserCurrent = new(_jewelsCurrent[_branchData.Connect], Vector2Int.zero);
+            _jewelsCurrent = new(count);
 
-        return true;
+            Add();
 
-        #region Local functions
+            waitResult.SetResult(true);
+        }
         //======================
-        bool Branch()
+        IEnumerator Branch_Coroutine()
         {
             Vector2Int branchIn, branchOut;
-            int connectIndex;
-
-            int minIndex = 2, maxIndex = _countCurrent - minIndex, leftIndex = (minIndex + maxIndex) >> 1, rightIndex = leftIndex;
+            int connectIndex, minIndex = 2, maxIndex = _countCurrent - minIndex, leftIndex = (minIndex + maxIndex) >> 1, rightIndex = leftIndex;
 
             while (leftIndex >= minIndex || rightIndex < maxIndex)
             {
                 if (leftIndex >= minIndex && TryInsert(_jewelsCurrent[connectIndex = leftIndex--]))
-                    return true;
+                    yield break;
                 if (rightIndex < maxIndex && TryInsert(_jewelsCurrent[connectIndex = rightIndex++]))
-                    return true;
-            }
-            return false;
+                    yield break;
 
-            #region Local functions
+                yield return null;
+            }
+
+            waitResult.SetResult(false);
+
+            #region Local: TryInsert(...)
             //======================
             bool TryInsert(Vector2Int connectCurrent)
             {

@@ -1,16 +1,21 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class ALevelTwo : ALevel
 {
     protected ALevelGeneratorTwo _generator;
+    protected ALevelGeneratorTwoC _generatorC;
+    protected PositionsChainTwo _positionsChain;
 
     protected abstract int StartFromRandom { get; }
     protected abstract int EndFromRandom { get; }
 
     public ALevelTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool) { }
 
-    protected PositionsChainTwo Generate(int maxDistance)
+    public override bool Generate(int count, int maxDistance)
     {
+        _count = count;
+
         PositionsChainTwo chain;
         int attempts = 0, maxAttempts = _count << SHIFT_ATTEMPS;
         int countOne, countTwo;
@@ -26,8 +31,43 @@ public abstract class ALevelTwo : ALevel
 
         Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");
 
-        return chain;
+        _positionsChain = chain;
+        return (_positionsChain = chain) != null;
     }
+
+    public override WaitResult<bool> Generate_Wait(int count, int maxDistance)
+    {
+        WaitResult<bool> waitResult = new();
+        _count = count;
+        _isGeneration = true;
+        _actorsPool.StartCoroutine(Generate_Coroutine());
+        return waitResult;
+
+        #region Local function
+        //=================================
+        IEnumerator Generate_Coroutine()
+        {
+            WaitResult<PositionsChainTwo> chain;
+            int attempts = 0, maxAttempts = _count << SHIFT_ATTEMPS;
+            int countOne, countTwo;
+
+            do
+            {
+                countTwo = (_count >> 1) - Random.Range(StartFromRandom, EndFromRandom);
+                countOne = _count - countTwo;
+
+                yield return chain = _generatorC.Generate_Wait(countOne, countTwo, maxDistance);
+            }
+            while (_isGeneration && ++attempts < maxAttempts && chain.Result == null);
+
+            waitResult.SetResult((_positionsChain = chain.Result) != null);
+            _isGeneration = false;
+
+            Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");
+        }
+        #endregion
+    }
+
 
     protected void SpawnPartChain(PositionsChainOne chain, int start, int end, int type, bool zeroStart = false, bool zeroEnd = false)
     {

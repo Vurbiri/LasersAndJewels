@@ -12,6 +12,8 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     private Collider2D _collider;
     private readonly LoopArray<TurnData> _turnData = new(TurnData.Direction);
     private Transform _transformSprite;
+    private bool _hint = false;
+    private CheatController _cheatController;
 
     public override bool IsEnd => false;
 
@@ -20,10 +22,12 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     public override void Initialize()
     {
         _collider = GetComponent<Collider2D>();
+        _cheatController = CheatController.InstanceF;
         _transformSprite = _spriteModule.Transform;
         _textCount.gameObject.SetActive(false);
 
         _collider.enabled = false;
+        _cheatController.EventChangeCheat += OnChangeCheat;
         base.Initialize();
     }
 
@@ -31,23 +35,26 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     {
         BaseSetup(index, idType);
 
+        _hint = count == 1;
+
         _textCount.text = count.ToString();
         _textCount.color = _colors[group].Brightness(_brightnessParticle);
         
-
         Turn(_turnData.Default);
     }
 
-    public override void Run()
+    public override bool ShowHint()
     {
-        base.Run();
-        _collider.enabled = true;
+        if (_hint) return false;
+
+        _textCount.gameObject.SetActive(_hint = true);
+        return true;
     }
 
     protected override void Run_Wait_FinalAction()
     {
         _collider.enabled = true;
-        //_textCount.gameObject.SetActive(true);
+        _textCount.gameObject.SetActive(_cheatController.IsCheat);
     }
 
     public override void Deactivate()
@@ -81,5 +88,12 @@ public class Jewel : AJewel<Jewel>, IMouseClick
         Turn(isLeft ? _turnData.Back : _turnData.Forward);
 
         if (_isOn) EventSelected?.Invoke();
+    }
+
+    private void OnChangeCheat(bool isCheat) => _textCount.gameObject.SetActive(_hint || isCheat);
+
+    private void OnDestroy()
+    {
+        _cheatController.EventChangeCheat -= OnChangeCheat;
     }
 }

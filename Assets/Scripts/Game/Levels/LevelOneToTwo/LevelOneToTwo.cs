@@ -11,32 +11,27 @@ public class LevelOneToTwo : ALevelTwo
     public LevelOneToTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new LevelGeneratorOneToTwo(size);
+        _generatorC = new LevelGeneratorOneToTwoC(size, actorsPool);
     }
 
-    public override bool Create(int count, int maxDistance)
+    public override void Create()
     {
-        _count = count;
-        PositionsChainTwo positionsChain = Generate(maxDistance);
-        if (positionsChain == null) return false;
-
         _colorGenerator.GenerateThree();
         _jewels = new(_count--);
 
-        int connect = positionsChain.Branch.Connect;
-        PositionsChainOne jChain = positionsChain.One;
+        int connect = _positionsChain.Branch.Connect;
+        PositionsChainOne jChain = _positionsChain.One;
         _laserOne = _actorsPool.GetLaser(jChain.Laser, TYPE_THREE, _count);
         SpawnPartChain(jChain, 0, connect, TYPE_THREE, false, true);
 
-        Add(_jewelOneToTwo = _actorsPool.GetJewelOneToTwo(positionsChain.Branch, TYPE_ONE, TYPE_TWO, TYPE_THREE, _count));
+        Add(_jewelOneToTwo = _actorsPool.GetJewelOneToTwo(_positionsChain.Branch, TYPE_ONE, TYPE_TWO, TYPE_THREE, _count));
         
         SpawnPartChain(jChain, connect + 1, jChain.Count, TYPE_ONE, true);
         Add(_actorsPool.GetJewelEnd(jChain.End, TYPE_ONE));
 
-        jChain = positionsChain.Two;
+        jChain = _positionsChain.Two;
         SpawnPartChain(jChain, 0, jChain.Count, TYPE_TWO, true);
         Add(_actorsPool.GetJewelEnd(jChain.End, TYPE_TWO));
-
-        return true;
     }
 
     public override bool CheckChain()

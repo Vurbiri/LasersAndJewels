@@ -49,10 +49,7 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _isVisited = false;
     }
 
-    public virtual void Run()
-    {
-        Activate();
-    }
+    public abstract bool ShowHint();
 
     public WaitActivate Run_Wait()
     {

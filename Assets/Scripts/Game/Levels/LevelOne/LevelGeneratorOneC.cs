@@ -1,9 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
-public class LevelGeneratorOneCoroutine : ALevelGeneratorCoroutine
+public class LevelGeneratorOneC : ALevelGeneratorC
 {
-    public LevelGeneratorOneCoroutine(Vector2Int size, MonoBehaviour mono) : base(size, mono) { }
+    public LevelGeneratorOneC(Vector2Int size, MonoBehaviour mono) : base(size, mono) { }
 
     public WaitResult<PositionsChainOne> Generate_Wait(int count, int maxDistance)
     {

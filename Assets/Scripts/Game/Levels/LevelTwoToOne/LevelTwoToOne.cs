@@ -13,33 +13,28 @@ public class LevelTwoToOne : ALevelTwo
     public LevelTwoToOne(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new LevelGeneratorTwoToOne(size);
+        _generatorC = new LevelGeneratorTwoToOneC(size, actorsPool);
     }
 
-    public override bool Create(int count, int maxDistance)
+    public override void Create()
     {
-        _count = count;
-        PositionsChainTwo positionsChain = Generate(maxDistance);
-        if (positionsChain == null) return false;
-
         _colorGenerator.GenerateThree();
-        _count = positionsChain.One.Count + positionsChain.Two.Count + 2;
+        _count = _positionsChain.One.Count + _positionsChain.Two.Count + 2;
         _jewels = new(_count);
 
-        int connect = positionsChain.Branch.Connect;
-        PositionsChainOne jChain = positionsChain.One;
+        int connect = _positionsChain.Branch.Connect;
+        PositionsChainOne jChain = _positionsChain.One;
         _laserOne = _actorsPool.GetLaser(jChain.Laser, TYPE_ONE, _count);
         SpawnPartChain(jChain, 0, connect, TYPE_ONE, false, true);
 
-        Add(_jewelTwoToOne = _actorsPool.GetJewelTwoToOne(positionsChain.Branch, TYPE_THREE, TYPE_ONE, TYPE_TWO, _count));
+        Add(_jewelTwoToOne = _actorsPool.GetJewelTwoToOne(_positionsChain.Branch, TYPE_THREE, TYPE_ONE, TYPE_TWO, _count));
         SpawnPartChain(jChain, connect + 1, jChain.Count, TYPE_THREE, true);
         Add(_actorsPool.GetJewelEnd(jChain.End, TYPE_THREE));
 
-        jChain = positionsChain.Two;
+        jChain = _positionsChain.Two;
         _laserTwo = _actorsPool.GetLaser(jChain.Laser, TYPE_TWO, _count);
-        SpawnPartChain(jChain, 0, jChain.Count , TYPE_TWO);
-        Add(_actorsPool.GetJewel(jChain.End, 0, positionsChain.Two.Count + 1, TYPE_TWO));
-
-        return true;
+        SpawnPartChain(jChain, 0, jChain.Count, TYPE_TWO);
+        Add(_actorsPool.GetJewel(jChain.End, 0, _positionsChain.Two.Count + 1, TYPE_TWO));
     }
 
     public override bool CheckChain()
@@ -56,24 +51,11 @@ public class LevelTwoToOne : ALevelTwo
 
         return isLevelComplete;
     }
-    
-    public override void Run()
-    {
-        _laserTwo.Run();
-        base.Run();
-    }
 
     public override IEnumerator Run_Coroutine()
     {
         _laserTwo.Run();
         return base.Run_Coroutine();
-    }
-
-    public override void Clear()
-    {
-        base.Clear();
-        _laserTwo.Deactivate();
-        _laserTwo = null;
     }
 
     public override IEnumerator Clear_Coroutine()

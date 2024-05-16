@@ -3,14 +3,12 @@ using UnityEngine;
 public class GlobalColors : ASingleton<GlobalColors>
 {
     [Space]
-    [SerializeField] private Color _colorDefault = new(0.87f, 0.87f, 1f , 1f);
+    [SerializeField] private Color _colorDefault = new(0.894f, 0.894f, 0.957f, 1f);
     [SerializeField] private Color[] _colors;
-    [Space]
-    [SerializeField] private int _chanceColorDefaultForOne = 10;
 
     private readonly Color[] _colorsRandom = new Color[4];
     private readonly int[] _indexes = new int[3];
-    private int _count;
+    private int _count, _chanceColorDefaultForOne;
 
     public Color this[int i] => _colorsRandom[i];
 
@@ -20,11 +18,15 @@ public class GlobalColors : ASingleton<GlobalColors>
         base.Awake();
 
         _count = _colors.Length;
+        _chanceColorDefaultForOne = 100 / (_count + 1);
+
+        _colorsRandom[0] = _colorDefault;
     }
 
     public void GenerateOne()
     {
-        _colorsRandom[0] = URandom.IsTrue(_chanceColorDefaultForOne) ? _colorDefault : _colors.Rand();
+        _colorsRandom[1] = URandom.IsTrue(_chanceColorDefaultForOne) ? _colorDefault : _colors.Rand();
+        //_colorsRandom[1] = _colors[1];
     }
 
     public void GenerateTwo()
@@ -39,8 +41,6 @@ public class GlobalColors : ASingleton<GlobalColors>
 
     private void RandomRangeColors(int count)
     {
-        _colorsRandom[0] = _colorDefault;
-
         for (int i = 1, k = 0; i <= count; i++, k++)
         {
             while (!CreateIndex(k));

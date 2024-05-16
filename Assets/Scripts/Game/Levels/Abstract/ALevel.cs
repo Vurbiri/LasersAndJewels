@@ -12,10 +12,12 @@ public abstract class ALevel
     protected List<IJewel> _jewels;
     protected Laser _laserOne;
     protected int _count;
+    protected bool _isGeneration;
 
     protected IJewel this[Vector2Int index] { get => _area[index.x, index.y]; set => _area[index.x, index.y] = value; }
 
     public abstract LevelType Type { get; }
+    public bool IsGeneration => _isGeneration;
 
     protected const int SHIFT_ATTEMPS = 3;
     protected const int TYPE_ZERO = 0, TYPE_ONE = 1, TYPE_TWO = 2, TYPE_THREE = 3;
@@ -29,15 +31,11 @@ public abstract class ALevel
         _colorGenerator = GlobalColors.InstanceF;
     }
 
-    public abstract bool Create(int count, int maxDistance);
-    //public abstract WaitResult<bool> Create_Wait(int count, int maxDistance);
+    public abstract bool Generate(int count, int maxDistance);
+    public abstract WaitResult<bool> Generate_Wait(int count, int maxDistance);
+    public abstract void Create();
 
-    public virtual void Run()
-    {
-        _laserOne.Run();
-        _jewels.ForEach((j) => j.Run());
-        CheckChain();
-    }
+    public void StopGenerate() => _isGeneration = false;
 
     public virtual IEnumerator Run_Coroutine()
     {
@@ -50,6 +48,17 @@ public abstract class ALevel
 
     public abstract bool CheckChain();
 
+    public virtual IEnumerator Clear_Coroutine()
+    {
+        _area = new IJewel[_size.x, _size.y];
+        WaitAll waitAll = new(_actorsPool);
+        waitAll.Add(_laserOne.Deactivate_Coroutine());
+        _jewels.ForEach((j) => waitAll.Add(j.Deactivate_Coroutine()));
+        yield return waitAll;
+        _laserOne = null;
+        _jewels = null;
+    }
+
     protected int CheckChain(ILaser laser)
     {
         int count = 1, currentType = laser.LaserType;
@@ -59,7 +68,7 @@ public abstract class ALevel
 
         do
         {
-            while (IsEmpty(index += direction));
+            while (IsEmpty(index += direction)) ;
 
             if (!IsCorrect(index)) break;
 
@@ -78,7 +87,7 @@ public abstract class ALevel
 
         return countVisited;
 
-        #region Local functions
+        #region Local: ToVisit()
         //======================
         bool ToVisit()
         {
@@ -88,26 +97,6 @@ public abstract class ALevel
             return true;
         }
         #endregion
-    }
-
-    public virtual void Clear()
-    {
-        _area = new IJewel[_size.x, _size.y];
-        _laserOne.Deactivate();
-        _laserOne = null;
-        _jewels.ForEach((j) => j.Deactivate());
-        _jewels = null;
-    }
-
-    public virtual IEnumerator Clear_Coroutine()
-    {
-        _area = new IJewel[_size.x, _size.y];
-        WaitAll waitAll = new(_actorsPool);
-        waitAll.Add(_laserOne.Deactivate_Coroutine());
-        _jewels.ForEach((j) => waitAll.Add(j.Deactivate_Coroutine()));
-        yield return waitAll;
-        _laserOne = null;
-        _jewels = null;
     }
 
     protected void Add(IJewel jewel)

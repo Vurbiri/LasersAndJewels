@@ -36,11 +36,7 @@ public abstract class AJewelTo : MonoBehaviour, IJewel
         gameObject.SetActive(false);
     }
 
-    public void Run()
-    {
-        gameObject.SetActive(true);
-        _jewelCollider.IsInteractable = true;
-    }
+    public bool ShowHint() => false;
 
     public WaitActivate Run_Wait() 
     {

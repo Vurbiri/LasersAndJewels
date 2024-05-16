@@ -13,22 +13,16 @@ public class LevelTwo : ALevelTwo
     public LevelTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)
     {
         _generator = new LevelGeneratorTwo(size);
+        _generatorC = new LevelGeneratorTwoC(size, actorsPool);
     }
 
-    public override bool Create(int count, int maxDistance)
+    public override void Create()
     {
-        _count = count;
-
-        PositionsChainTwo positionsChain = Generate(maxDistance);
-        if (positionsChain == null) return false;
-
         _colorGenerator.GenerateTwo();
-        _jewels = new(count);
+        _jewels = new(_count);
 
-        Spawn(positionsChain.One, ref _laserOne, TYPE_ONE);
-        Spawn(positionsChain.Two, ref _laserTwo, TYPE_TWO);
-
-        return true;
+        Spawn(_positionsChain.One, ref _laserOne, TYPE_ONE);
+        Spawn(_positionsChain.Two, ref _laserTwo, TYPE_TWO);
 
         #region Local function
         //======================
@@ -41,12 +35,6 @@ public class LevelTwo : ALevelTwo
             Add(_actorsPool.GetJewelEnd(chain.End, type));
         }
         #endregion
-    }
-
-    public override void Run()
-    {
-        _laserTwo.Run();
-        base.Run();
     }
 
     public override IEnumerator Run_Coroutine()
@@ -63,13 +51,6 @@ public class LevelTwo : ALevelTwo
             jewel.Switch(isLevelComplete);
 
         return isLevelComplete;
-    }
-
-    public override void Clear()
-    {
-        base.Clear();
-        _laserTwo.Deactivate();
-        _laserTwo = null;
     }
 
     public override IEnumerator Clear_Coroutine()

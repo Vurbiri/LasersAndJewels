@@ -9,7 +9,7 @@ public class WaitReturnData<T> : CustomYieldInstruction
     public T Return { get; private set; }
 
     public override bool keepWaiting => _keepWaiting;
-    public bool _keepWaiting = true;
+    private bool _keepWaiting = true;
 
     public WaitReturnData(MonoBehaviour monoBehaviour)
     {

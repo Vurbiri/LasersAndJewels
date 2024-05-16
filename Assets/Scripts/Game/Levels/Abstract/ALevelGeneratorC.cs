@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public abstract class ALevelGeneratorCoroutine
+public abstract class ALevelGeneratorC
 {
     protected readonly Vector2Int _size;
 
@@ -19,7 +19,7 @@ public abstract class ALevelGeneratorCoroutine
     protected const int SHIFT_ERROR = 3;
     protected const int COUNT_ERROR = 40;
 
-    public ALevelGeneratorCoroutine(Vector2Int size, MonoBehaviour mono)
+    public ALevelGeneratorC(Vector2Int size, MonoBehaviour mono)
     {
         _size = size;
         _mono = mono;
@@ -46,7 +46,7 @@ public abstract class ALevelGeneratorCoroutine
 
         return GenerateChain_Wait();
 
-        #region Local functions
+        #region Local: SetX(), SetY()
         //======================
         int SetX()
         {
@@ -83,7 +83,7 @@ public abstract class ALevelGeneratorCoroutine
         _mono.StartCoroutine(GenerateChain_Coroutine());
         return waitResult;
 
-        #region Local function
+        #region Local: GenerateChain_Coroutine()
         //=================================
         IEnumerator GenerateChain_Coroutine()
         {

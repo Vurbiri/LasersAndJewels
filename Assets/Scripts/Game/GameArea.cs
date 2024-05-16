@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,14 +7,18 @@ using UnityEngine;
 public class GameArea : MonoBehaviour
 {
     [SerializeField] private Vector2Int _size = new(10, 9);
-    [SerializeField] private int _countJewel = 20;
     [SerializeField] private int _baseMaxDistance = 7;
-    [SerializeField] private LevelType _currentType = LevelType.TwoToOne;
 
     private readonly Dictionary<LevelType, ALevel> _levels = new(3);
-    private ALevelCoroutine _currentLevel;
+    private ALevel _currentLevel, _nextLevel;
+    private int _nextCount;
+    private WaitResult<bool> _waitNextLevel;
 
-    private void Awake()
+    private const int MIN_COUNT = 10, MAX_COUNT = 40;
+
+    public event Action EventLevelEnd, EventLevelStop;
+
+    public void Initialize()
     {
         ActorsPool actorsPool = GetComponent<ActorsPool>();
         actorsPool.Initialize(OnSelected);
@@ -22,44 +27,81 @@ public class GameArea : MonoBehaviour
         _levels.Add(LevelType.Two, new LevelTwo(_size, actorsPool));
         _levels.Add(LevelType.TwoToOne, new LevelTwoToOne(_size, actorsPool));
         _levels.Add(LevelType.OneToTwo, new LevelOneToTwo(_size, actorsPool));
-
-        //_currentLevel = _levels[_currentType];
-
-        _currentLevel = new LevelOneCoroutine(_size, actorsPool);
     }
 
-    //private void Start()
-    //{
-    //    int count = _countJewel;
-    //    while (!_currentLevel.Create(count--, _baseMaxDistance - (count >> 3)));
-
-    //    StartCoroutine(_currentLevel.Run_Coroutine());
-    //}
-
-    private IEnumerator Start()
+    public void GenerateStartLevel(LevelType type, int count)
     {
-        int count = _countJewel;
-        WaitResult<bool> waitResult;
-        do
-        yield return waitResult = _currentLevel.Generate_Wait(count--, _baseMaxDistance - (count >> 3));
-        while (!waitResult.Result);
+        _currentLevel = _levels[type];
+
+        StartCoroutine(GenerateLevel_Coroutine(Mathf.Clamp(count, MIN_COUNT, MAX_COUNT)));
+    }
+
+    public void PlayStartLevel(LevelType typeNext, int countNext)
+    {
+        StartCoroutine(PlayLevel_Coroutine(typeNext, countNext));
+    }
+
+    public void PlayNextLevel(LevelType typeNext, int countNext)
+    {
+        _currentLevel = _nextLevel;
+        StartCoroutine(PlayNextLevel_Coroutine());
+
+        #region Local: PlayNextLevel_Coroutine()
+        //=================================
+        IEnumerator PlayNextLevel_Coroutine()
+        {
+            if (_waitNextLevel.keepWaiting)
+                _currentLevel.StopGenerate();
+
+            yield return _waitNextLevel;
+
+            if (!_waitNextLevel.Result)
+                yield return StartCoroutine(GenerateLevel_Coroutine(Mathf.Clamp(_nextCount >> 1, MIN_COUNT, MAX_COUNT)));
+
+            StartCoroutine(PlayLevel_Coroutine(typeNext, countNext));
+        }
+        #endregion
+    }
+
+    private IEnumerator PlayLevel_Coroutine(LevelType typeNext, int countNext)
+    {
         _currentLevel.Create();
-        StartCoroutine(_currentLevel.Run_Coroutine());
+        yield return StartCoroutine(_currentLevel.Run_Coroutine());
+
+        _nextLevel = _levels[typeNext];
+        _nextCount = Mathf.Clamp(countNext, MIN_COUNT, MAX_COUNT);
+
+        _waitNextLevel = _nextLevel.Generate_Wait(_nextCount, MaxDistance(_nextCount));
+    }
+
+    public IEnumerator GenerateLevel_Coroutine(int count)
+    {
+        while (!_currentLevel.Generate(count, MaxDistance(count)))
+        {
+            if (count > MIN_COUNT)
+                count--;
+
+            yield return null;
+            Debug.Log(count);
+        }
     }
 
     private void OnSelected()
     {
         if (_currentLevel.CheckChain())
-            StartCoroutine(GameOver_Coroutine());
+            StartCoroutine(LevelComplete_Coroutine());
     }
 
-    private IEnumerator GameOver_Coroutine()
+    private IEnumerator LevelComplete_Coroutine()
     {
-        Debug.Log("-=/ Level complete \\=-");
-        yield return new WaitForSecondsRealtime(2f);
+        EventLevelEnd?.Invoke();
+        
         yield return StartCoroutine(_currentLevel.Clear_Coroutine());
-        Start();
+       
+        EventLevelStop?.Invoke();
     }
+
+    private int MaxDistance(int count) => _baseMaxDistance - (count >> 3);
 
 
 #if UNITY_EDITOR

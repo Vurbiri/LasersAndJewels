@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WaitAll : CustomYieldInstruction
 {
-    private readonly List<IEnumerator> _coroutines = new();
+    private readonly HashSet<IEnumerator> _coroutines = new();
     private readonly MonoBehaviour _monoBehaviour;
 
     public override bool keepWaiting => _coroutines.Count != 0;

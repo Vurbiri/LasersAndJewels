@@ -37,4 +37,16 @@ public class LoopArray<T>
         //for(int i = 0; i < _count; i++)
         //    _array[i] = array[i];
     }
+
+    public void SetCursor(T obj)
+    {
+        for(int i = 0; i < _count; i++) 
+        {
+            if (_array[i].Equals(obj))
+            {
+                _cursor = i;
+                return;
+            }
+        }
+    }
 }

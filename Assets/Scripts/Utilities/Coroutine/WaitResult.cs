@@ -5,7 +5,7 @@ public class WaitResult<T> : CustomYieldInstruction
     public T Result { get; private set; }
 
     public override bool keepWaiting => _keepWaiting;
-    public bool _keepWaiting = true;
+    private bool _keepWaiting = true;
 
     public static WaitResult<T> Empty { get; } = new(default);
 
