@@ -9,6 +9,7 @@ public class Laser : APooledObject<Laser>, ILaser
     [SerializeField] private float _alfaRay = 0.85f;
     [SerializeField] private float _durationHide = 1f;
 
+    private SoundSingleton _sound;
     private GlobalColors _colors;
     private Vector2Int _index, _orientation;
     private int _idType;
@@ -21,6 +22,7 @@ public class Laser : APooledObject<Laser>, ILaser
 
     public override void Initialize()
     {
+        _sound = SoundSingleton.Instance;
         _colors = GlobalColors.InstanceF;
 
         base.Initialize();
@@ -52,20 +54,18 @@ public class Laser : APooledObject<Laser>, ILaser
 
     public void SetRayPositions(int count)
     {
+        if (_laserRay.positionCount == 0 && count > 0)
+            _sound.PlayLaser();
+        
         _laserRay.positionCount = count;
         _laserRay.SetPositions(_positionsRay);
-    }
-
-    public override void Deactivate()
-    {
-        _laserRay.positionCount = 0;
-        base.Deactivate();
     }
 
     public IEnumerator Deactivate_Coroutine()
     {
         Color color = _laserRay.startColor;
         float alpha, currentTime = 0f, start = color.a;
+
         
         while (currentTime < _durationHide)
         {
@@ -75,6 +75,7 @@ public class Laser : APooledObject<Laser>, ILaser
             yield return null;
         }
 
+        //_sound.PlayLaserOff();
         _laserRay.positionCount = 0;
         base.Deactivate();
     }

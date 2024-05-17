@@ -5,6 +5,8 @@ public class Game : MonoBehaviour
 {
     [SerializeField] private GameArea _gameArea;
     [Space]
+    [SerializeField] private float _percentCountHint = 0.3f;
+    [Space]
     [SerializeField] private float _timePreStart = 2f;
     [Space]
     [SerializeField] private int _countJewel = 20;
@@ -13,12 +15,14 @@ public class Game : MonoBehaviour
     private WaitForSecondsRealtime _sleepPreStart;
     private readonly LoopArray<LevelType> _types = new(Enum<LevelType>.GetValues());
 
+    private int _currentLevel = 1;
+
     private void Awake()
     {
         _sleepPreStart = new(_timePreStart);
         _types.SetCursor(_currentType);
 
-        _gameArea.EventLevelStop += OnLevelStop;
+        _gameArea.EventLevelEnd += OnLevelEnd;
         
         _gameArea.Initialize();
         _gameArea.GenerateStartLevel(_currentType, _countJewel);
@@ -27,12 +31,11 @@ public class Game : MonoBehaviour
     private IEnumerator Start()
     {
         yield return _sleepPreStart;
-        _gameArea.PlayStartLevel(_types.Forward, _countJewel);
+        _gameArea.PlayStartLevel(_currentLevel++, _types.Forward, _countJewel);
     }
 
-    private void OnLevelStop()
+    private void OnLevelEnd()
     {
-        Debug.Log("-=/ Level complete \\=-");
         StartCoroutine(OnLevelStop_Coroutine());
 
         #region Local: OnLevelStop_Coroutine()
@@ -41,7 +44,7 @@ public class Game : MonoBehaviour
         {
 
             yield return _sleepPreStart;
-            _gameArea.PlayNextLevel(_types.Forward, _countJewel);
+            _gameArea.PlayNextLevel(_currentLevel++, _types.Forward, _countJewel);
         }
         #endregion
 
@@ -58,4 +61,14 @@ public class Game : MonoBehaviour
         Time.timeScale = 1;
 
     }
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            _gameArea.SHowHint(_percentCountHint);
+        }
+    }
+#endif
 }

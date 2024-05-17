@@ -66,7 +66,13 @@ public class JewelOneToTwo : AJewelTo
         IsVisited = false;
     }
 
-    public override void ResetRays() => DeactivateModules();
+    public override void ResetRays()
+    {
+        if (_moduleOutA.Count > 0 || _moduleOutB.Count > 0)
+            _sound.PlayLaserOff();
+
+        DeactivateModules();
+    }
 
     public override void Deactivate()
     {
@@ -94,6 +100,7 @@ public class JewelOneToTwo : AJewelTo
         if (_isOn) return;
 
         _isOn = true;
+        _sound.PlayLaser();
         _moduleOutA.On();
         _moduleOutB.On();
         _borderModule.On();
@@ -144,6 +151,7 @@ public class JewelOneToTwo : AJewelTo
         public Vector2Int Index => _index;
         public Vector2Int Orientation => _orientation;
         public Vector3[] PositionsRay => _positionsRay;
+        public int Count => _laserRay.positionCount;
 
         public void Initialize(float alfaRay)
         {

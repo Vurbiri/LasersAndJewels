@@ -12,14 +12,15 @@ public abstract class ALevel
     protected List<IJewel> _jewels;
     protected Laser _laserOne;
     protected int _count;
-    protected bool _isGeneration;
+    protected bool _isGeneration, _allowedHint;
 
     protected IJewel this[Vector2Int index] { get => _area[index.x, index.y]; set => _area[index.x, index.y] = value; }
+    protected virtual int RemoveCountHint => 1;
 
     public abstract LevelType Type { get; }
     public bool IsGeneration => _isGeneration;
 
-    protected const int SHIFT_ATTEMPS = 3;
+    protected const int SHIFT_ATTEMPS = 2;
     protected const int TYPE_ZERO = 0, TYPE_ONE = 1, TYPE_TWO = 2, TYPE_THREE = 3;
     protected const int CHANCE_BASE = 35;
 
@@ -44,19 +45,36 @@ public abstract class ALevel
         _jewels.ForEach((j) => waitAll.Add(j.Run_Wait()));
         yield return waitAll;
         CheckChain();
+        _allowedHint = true;
     }
 
     public abstract bool CheckChain();
 
     public virtual IEnumerator Clear_Coroutine()
     {
+        _allowedHint = false;
         _area = new IJewel[_size.x, _size.y];
+
         WaitAll waitAll = new(_actorsPool);
         waitAll.Add(_laserOne.Deactivate_Coroutine());
         _jewels.ForEach((j) => waitAll.Add(j.Deactivate_Coroutine()));
         yield return waitAll;
         _laserOne = null;
         _jewels = null;
+    }
+
+    public bool ShowHint(float present)
+    {
+        if (!_allowedHint) return false;
+
+        _allowedHint = false;
+        int count = Mathf.RoundToInt((_count - RemoveCountHint) * present);
+
+        while (count > 0) 
+            if (_jewels.Rand().ShowHint())
+                count--;
+
+        return true;
     }
 
     protected int CheckChain(ILaser laser)

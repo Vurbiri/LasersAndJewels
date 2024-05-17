@@ -48,7 +48,14 @@ public class JewelTwoToOne : AJewelTo, ILaser
 
         Off();
     }
-    public override void ResetRays() => SetRayPositions(0);
+
+    public override void ResetRays()
+    {
+        if (_laserRay.positionCount > 0)
+            _sound.PlayLaserOff();
+
+        SetRayPositions(0);
+    }
 
     public void SetRayPositions(int count)
     {
@@ -115,6 +122,7 @@ public class JewelTwoToOne : AJewelTo, ILaser
         if (_isOn) return;
 
         _isOn = true;
+        _sound.PlayLaser();
         _moduleOut.On();
         _borderModule.On();
     }

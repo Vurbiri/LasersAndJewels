@@ -6,6 +6,7 @@ public class LevelOneToTwo : ALevelTwo
     protected override int StartFromRandom => 1;
     protected override int EndFromRandom => _count >> 2;
 
+
     public override LevelType Type => LevelType.OneToTwo;
     
     public LevelOneToTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool)

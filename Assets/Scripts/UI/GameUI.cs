@@ -75,7 +75,7 @@ public class GameUI : MonoBehaviour
 
     private void Off()
     {
-        _thisTransform.position = _positionOff;
+        //_thisTransform.position = _positionOff;
         _mainMenu.SetButtonsActive(false);
     }
     private void On()

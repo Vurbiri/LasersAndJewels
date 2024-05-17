@@ -11,7 +11,9 @@ public class SoundSingleton : ASingleton<SoundSingleton>, IVolume
     [SerializeField] private AudioClip _clipFixed;
     [SerializeField] private AudioClip _clipError;
     [SerializeField] private AudioClip _clipTurn;
-    [SerializeField] private AudioClip _clipShuffle;
+    [SerializeField] private AudioClip _clipLaser;
+    [SerializeField] private AudioClip _clipLaserOff;
+    [SerializeField] private AudioClip _clipLaserFalling;
 
     private AudioSource _thisAudio;
 
@@ -42,7 +44,10 @@ public class SoundSingleton : ASingleton<SoundSingleton>, IVolume
     public void PlayFixed() => Play(_clipFixed);
     public void PlayError() => Play(_clipError);
     public void PlayTurn() => Play(_clipTurn);
-    public void PlayShuffle() => Play(_clipShuffle);
+    public void PlayLaser() => Play(_clipLaser);
+    public void PlayLaserOff() => Play(_clipLaserOff);
+    public void PlayLaserFalling() => Play(_clipLaserFalling);
+
 
     private void Play(AudioClip clip)
     {

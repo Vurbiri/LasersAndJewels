@@ -9,6 +9,7 @@ public abstract class ALevelTwo : ALevel
 
     protected abstract int StartFromRandom { get; }
     protected abstract int EndFromRandom { get; }
+    protected override int RemoveCountHint => 2;
 
     public ALevelTwo(Vector2Int size, ActorsPool actorsPool) : base(size, actorsPool) { }
 

@@ -16,6 +16,7 @@ public abstract class AJewelTo : MonoBehaviour, IJewel
 
     public event Action EventSelected;
 
+    protected SoundSingleton _sound;
     protected GlobalColors _colors;
     protected readonly LoopArray<TurnData> _turnData = new(TurnData.Direction);
     protected int _idType;
@@ -23,9 +24,10 @@ public abstract class AJewelTo : MonoBehaviour, IJewel
     protected Vector3 _position;
     protected bool _isOn = true;
     private readonly WaitForSecondsRealtime _sleep = new(2f);
-
+    
     public virtual void Initialize()
     {
+        _sound = SoundSingleton.Instance;
         _colors = GlobalColors.InstanceF;
 
         _jewelCollider.Initialize();
@@ -86,6 +88,8 @@ public abstract class AJewelTo : MonoBehaviour, IJewel
 
     protected virtual void OnClick(bool isLeft)
     {
+        _sound.PlayTurn();
+
         if (_isOn) EventSelected?.Invoke();
     }
 }

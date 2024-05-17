@@ -14,6 +14,7 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     private Transform _transformSprite;
     private bool _hint = false;
     private CheatController _cheatController;
+    private SoundSingleton _sound;
 
     public override bool IsEnd => false;
 
@@ -23,6 +24,7 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     {
         _collider = GetComponent<Collider2D>();
         _cheatController = CheatController.InstanceF;
+        _sound = SoundSingleton.Instance;
         _transformSprite = _spriteModule.Transform;
         _textCount.gameObject.SetActive(false);
 
@@ -66,7 +68,6 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     public override IEnumerator Deactivate_Coroutine()
     {
         _textCount.gameObject.SetActive(false);
-
         return base.Deactivate_Coroutine();
     }
 
@@ -87,10 +88,12 @@ public class Jewel : AJewel<Jewel>, IMouseClick
     {
         Turn(isLeft ? _turnData.Back : _turnData.Forward);
 
+        _sound.PlayTurn();
+
         if (_isOn) EventSelected?.Invoke();
     }
 
-    private void OnChangeCheat(bool isCheat) => _textCount.gameObject.SetActive(_hint || isCheat);
+    private void OnChangeCheat(bool isCheat) => _textCount.gameObject.SetActive(isCheat);
 
     private void OnDestroy()
     {
