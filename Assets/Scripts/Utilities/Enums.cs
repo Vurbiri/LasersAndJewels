@@ -36,10 +36,10 @@ public enum ModuleType : byte
     Out
 }
 
-public enum GameMode : byte
+public enum GameModeStart : byte
 {
-    Game,
-    Bonus
+    New,
+    Continue
 }
 
 public static class ExtensionsEnum

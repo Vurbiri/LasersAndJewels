@@ -25,7 +25,7 @@ public class LevelOne : ALevel
         do chain = _generator.Generate(count, maxDistance);
         while (++attempts < maxAttempts && chain == null);
 
-        Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");
+        Debug.Log($"{Type} count: {_count}. attempts: {attempts} / {maxAttempts} \n====================================");
 
         return (_positionsChain = chain) != null;
     }
@@ -47,10 +47,10 @@ public class LevelOne : ALevel
             do yield return chain = _generatorC.Generate_Wait(count, maxDistance);
             while (_isGeneration && ++attempts < maxAttempts && chain.Result == null);
 
-            waitResult.SetResult((_positionsChain = chain.Result) != null);
-            _isGeneration = false;
+            Debug.Log($"{Type} count: {_count}. attempts: {attempts} / {maxAttempts} \n====================================");
 
-            Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");
+            _isGeneration = false;
+            waitResult.SetResult((_positionsChain = chain.Result) != null);
         }
         #endregion
     }

@@ -23,7 +23,7 @@ public class LevelGeneratorTwo : ALevelGeneratorTwo
         _jewelsCurrent = new(count);
 
         int error = 0;
-        count = COUNT_ERROR >> 1;
+        count = _countCurrent >> 1;
 
         while (error++ < count)
         {

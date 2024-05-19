@@ -50,6 +50,6 @@ TagManager:
   - name: UIGame
     uniqueID: 2308974419
     locked: 0
-  - name: UIMenu
+  - name: UI
     uniqueID: 2501357613
     locked: 0

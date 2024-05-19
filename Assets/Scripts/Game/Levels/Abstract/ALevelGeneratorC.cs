@@ -16,8 +16,7 @@ public abstract class ALevelGeneratorC
     protected MonoBehaviour _mono;
     protected Func<bool> funcIsNotBetween;
 
-    protected const int SHIFT_ERROR = 3;
-    protected const int COUNT_ERROR = 40;
+    private const int SHIFT_ERROR = 3;
 
     public ALevelGeneratorC(Vector2Int size, MonoBehaviour mono)
     {
@@ -88,8 +87,8 @@ public abstract class ALevelGeneratorC
         IEnumerator GenerateChain_Coroutine()
         {
             bool result = false;
-            int error = 0, count;
-            while (_jewelsCurrent.Count < _countCurrent && error < COUNT_ERROR)
+            int error = 0, countRemove;
+            while (_jewelsCurrent.Count < _countCurrent && error < _countCurrent)
             {
                 yield return null;
 
@@ -100,8 +99,8 @@ public abstract class ALevelGeneratorC
                 }
 
                 error++;
-                count = Mathf.Min((error >> SHIFT_ERROR) + 1, _jewelsCurrent.Count);
-                for (int i = 0; i < count; i++)
+                countRemove = Mathf.Min((error >> SHIFT_ERROR) + 1, _jewelsCurrent.Count);
+                for (int i = 0; i < countRemove; i++)
                     RemoveLast();
 
                 if (_jewelsCurrent.Count < 2)

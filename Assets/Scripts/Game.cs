@@ -3,51 +3,61 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    [SerializeField] private InputController _input;
     [SerializeField] private GameArea _gameArea;
     [Space]
-    [SerializeField] private float _percentCountHint = 0.3f;
-    [Space]
     [SerializeField] private float _timePreStart = 2f;
-    [Space]
-    [SerializeField] private int _countJewel = 20;
-    [SerializeField] private LevelType _currentType = LevelType.TwoToOne;
 
     private WaitForSecondsRealtime _sleepPreStart;
-    private readonly LoopArray<LevelType> _types = new(Enum<LevelType>.GetValues());
-
-    private int _currentLevel = 1;
+    private DataGame _dataGame;
 
     private void Awake()
     {
         _sleepPreStart = new(_timePreStart);
-        _types.SetCursor(_currentType);
+
+        _dataGame = DataGame.Instance;
+
+        _input.EventHint += OnHint;
 
         _gameArea.EventLevelEnd += OnLevelEnd;
         
-        _gameArea.Initialize();
-        _gameArea.GenerateStartLevel(_currentType, _countJewel);
+        _gameArea.Initialize(_dataGame.MinCountJewel);
+        _gameArea.GenerateStartLevel(_dataGame.LevelData);
     }
 
     private IEnumerator Start()
     {
         yield return _sleepPreStart;
-        _gameArea.PlayStartLevel(_currentLevel++, _types.Forward, _countJewel);
+        _dataGame.StartLevel();
+        _gameArea.PlayStartLevel(_dataGame.LevelData);
+        _input.IsHint = _dataGame.Hint > 0;
     }
 
     private void OnLevelEnd()
     {
+        _dataGame.NextLevel();
         StartCoroutine(OnLevelStop_Coroutine());
 
         #region Local: OnLevelStop_Coroutine()
         //=================================
         IEnumerator OnLevelStop_Coroutine()
         {
-
             yield return _sleepPreStart;
-            _gameArea.PlayNextLevel(_currentLevel++, _types.Forward, _countJewel);
+            _gameArea.PlayNextLevel(_dataGame.LevelData);
+            _input.IsHint = _dataGame.Hint > 0;
         }
         #endregion
+    }
 
+    private void OnHint()
+    {
+        if (_dataGame.Hint <= 0) return;
+
+        if (_gameArea.ShowHint())
+        {
+            _dataGame.Hint--;
+            _input.IsHint = false;
+        }
     }
 
     private void OnPause()
@@ -61,14 +71,4 @@ public class Game : MonoBehaviour
         Time.timeScale = 1;
 
     }
-
-#if UNITY_EDITOR
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            _gameArea.SHowHint(_percentCountHint);
-        }
-    }
-#endif
 }

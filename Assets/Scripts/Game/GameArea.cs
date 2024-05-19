@@ -7,21 +7,23 @@ using UnityEngine;
 public class GameArea : MonoBehaviour
 {
     [SerializeField] private Vector2Int _size = new(10, 9);
+    [Space]
+    [SerializeField] private float _percentCountHint = 0.375f;
     [SerializeField] private int _baseMaxDistance = 7;
     [Space]
     [SerializeField] private ScreenMessage _screenMessage;
 
     private readonly Dictionary<LevelType, ALevel> _levels = new(3);
     private ALevel _currentLevel, _nextLevel;
-    private int _nextCount;
+    private int _nextCount, _minCount;
     private WaitResult<bool> _waitNextLevel;
 
-    private const int MIN_COUNT = 10, MAX_COUNT = 40;
+    public event Action EventLevelEnd;
 
-    public event Action EventLevelEnd, EventLevelStop;
-
-    public void Initialize()
+    public void Initialize(int minCount)
     {
+        _minCount = minCount;
+
         ActorsPool actorsPool = GetComponent<ActorsPool>();
         actorsPool.Initialize(OnSelected);
 
@@ -33,19 +35,18 @@ public class GameArea : MonoBehaviour
         _screenMessage.Initialize();
     }
 
-    public void GenerateStartLevel(LevelType type, int count)
+    public void GenerateStartLevel(LevelData data)
     {
-        _currentLevel = _levels[type];
-
-        StartCoroutine(GenerateLevel_Coroutine(Mathf.Clamp(count, MIN_COUNT, MAX_COUNT)));
+        _currentLevel = _levels[data.TypeNext];
+        StartCoroutine(GenerateCurrent_Coroutine(data.CountNext));
     }
 
-    public void PlayStartLevel(int level, LevelType typeNext, int countNext)
+    public void PlayStartLevel(LevelData data)
     {
-        StartCoroutine(PlayLevel_Coroutine(level, typeNext, countNext));
+        StartCoroutine(PlayLevel_Coroutine(data));
     }
 
-    public void PlayNextLevel(int level, LevelType typeNext, int countNext)
+    public void PlayNextLevel(LevelData data)
     {
         _currentLevel = _nextLevel;
         StartCoroutine(PlayNextLevel_Coroutine());
@@ -54,48 +55,70 @@ public class GameArea : MonoBehaviour
         //=================================
         IEnumerator PlayNextLevel_Coroutine()
         {
+            _waitNextLevel.EventCompleted -= OnCompleted;
+
             if (_waitNextLevel.keepWaiting)
                 _currentLevel.StopGenerate();
 
             yield return _waitNextLevel;
 
             if (!_waitNextLevel.Result)
-                yield return StartCoroutine(GenerateLevel_Coroutine(Mathf.Clamp(_nextCount >> 1, MIN_COUNT, MAX_COUNT)));
+                yield return StartCoroutine(GenerateCurrent_Coroutine(Mathf.Clamp(_nextCount - 1, _minCount, _nextCount)));
 
-            StartCoroutine(PlayLevel_Coroutine(level, typeNext, countNext));
+            StartCoroutine(PlayLevel_Coroutine(data));
         }
         #endregion
     }
 
-    private IEnumerator PlayLevel_Coroutine(int level, LevelType typeNext, int countNext)
+    private IEnumerator PlayLevel_Coroutine(LevelData data)
     {
-        _screenMessage.GameLevel(level);
+        _screenMessage.GameLevel(data.Level);
         _currentLevel.Create();
         yield return StartCoroutine(_currentLevel.Run_Coroutine());
 
-        _nextLevel = _levels[typeNext];
-        _nextCount = Mathf.Clamp(countNext, MIN_COUNT, MAX_COUNT);
-
-        _waitNextLevel = _nextLevel.Generate_Wait(_nextCount, MaxDistance(_nextCount));
+        _nextLevel = _levels[data.TypeNext];
+        _nextCount = data.CountNext;
+        GenerateNext();
     }
 
-    public IEnumerator GenerateLevel_Coroutine(int count)
+    public IEnumerator GenerateCurrent_Coroutine(int count)
     {
         while (!_currentLevel.Generate(count, MaxDistance(count)))
         {
-            if (count > MIN_COUNT)
+            if (count > _minCount)
                 count--;
 
             yield return null;
-            Debug.Log(count);
         }
     }
 
-    public bool SHowHint(float present)
+    public bool ShowHint()
     {
-        if (_currentLevel == null) return false;
+        if(_currentLevel != null && _currentLevel.ShowHint(_percentCountHint))
+        {
+            _screenMessage.Hint();
+            return true;
+        }
 
-        return _currentLevel.ShowHint(present);
+        return false;
+    }
+
+    private void GenerateNext()
+    {
+        _waitNextLevel = _nextLevel.Generate_Wait(_nextCount, MaxDistance(_nextCount));
+        _waitNextLevel.EventCompleted += OnCompleted;
+    }
+
+    private void OnCompleted(bool result)
+    {
+        //_waitNextLevel.EventCompleted -= OnCompleted;
+
+        if (result) return;
+
+        if (_nextCount > _minCount)
+            _nextCount--;
+
+        GenerateNext();
     }
 
     private void OnSelected()
@@ -106,8 +129,6 @@ public class GameArea : MonoBehaviour
 
     private IEnumerator LevelComplete_Coroutine()
     {
-        EventLevelStop?.Invoke();
-
         _screenMessage.LevelComplete();
         yield return StartCoroutine(_currentLevel.Clear_Coroutine());
        

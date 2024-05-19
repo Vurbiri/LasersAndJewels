@@ -4969,4 +4969,4 @@ MonoBehaviour:
     _durationShowHide: 1
   _particle: {fileID: 2466002474862386052}
   _brightnessParticle: 1.2
-  _timeShowHide: {x: 0.5, y: 1.5}
+  _timeShowHide: {x: 1, y: 2}

@@ -5,15 +5,16 @@ public class SoundSingleton : ASingleton<SoundSingleton>, IVolume
     [Space]
     [SerializeField] private AudioClip _clipNewLevel;
     [SerializeField] private AudioClip _clipLevelComplete;
-    [SerializeField] private AudioClip _clipGameOver;
-    [SerializeField] private AudioClip _clipStart;
-    [SerializeField] private AudioClip _clipSelect;
-    [SerializeField] private AudioClip _clipFixed;
-    [SerializeField] private AudioClip _clipError;
+    [SerializeField] private AudioClip _clipHint;
     [SerializeField] private AudioClip _clipTurn;
     [SerializeField] private AudioClip _clipLaser;
     [SerializeField] private AudioClip _clipLaserOff;
     [SerializeField] private AudioClip _clipLaserFalling;
+    [SerializeField] private AudioClip _clipCheat;
+    [Space]
+    [SerializeField] private AudioClip _clipGameOver;
+    [SerializeField] private AudioClip _clipStart;
+    [SerializeField] private AudioClip _clipError;
 
     private AudioSource _thisAudio;
 
@@ -38,15 +39,17 @@ public class SoundSingleton : ASingleton<SoundSingleton>, IVolume
 
     public void PlayNewLevel() => Play(_clipNewLevel);
     public void PlayLevelComplete() => Play(_clipLevelComplete);
-    public void PlayGameOver() => Play(_clipGameOver);
-    public void PlayStart() => Play(_clipStart);
-    public void PlaySelect() => Play(_clipSelect);
-    public void PlayFixed() => Play(_clipFixed);
-    public void PlayError() => Play(_clipError);
+    public void PlayHint() => Play(_clipHint);
     public void PlayTurn() => Play(_clipTurn);
     public void PlayLaser() => Play(_clipLaser);
     public void PlayLaserOff() => Play(_clipLaserOff);
     public void PlayLaserFalling() => Play(_clipLaserFalling);
+    public void PlayCheat() => Play(_clipCheat);
+
+
+    public void PlayGameOver() => Play(_clipGameOver);
+    public void PlayStart() => Play(_clipStart);
+    public void PlayError() => Play(_clipError);
 
 
     private void Play(AudioClip clip)

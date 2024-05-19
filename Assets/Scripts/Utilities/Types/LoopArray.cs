@@ -1,3 +1,4 @@
+using UnityEngine;
 
 public class LoopArray<T>
 {
@@ -27,6 +28,8 @@ public class LoopArray<T>
             return _array[_cursor];
         }
     }
+
+    public T Rand => _array[_cursor = Random.Range(0, _count)];
 
     public LoopArray(T[] array)
     {

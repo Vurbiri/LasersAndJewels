@@ -303,7 +303,7 @@ MonoBehaviour:
     _durationShowHide: 1
   _particle: {fileID: 4494390942368735012}
   _brightnessParticle: 1.2
-  _timeShowHide: {x: 0.5, y: 1.5}
+  _timeShowHide: {x: 0.5, y: 2}
   _textCount: {fileID: 9017782455064332976}
 --- !u!58 &6604037502627985095
 CircleCollider2D:

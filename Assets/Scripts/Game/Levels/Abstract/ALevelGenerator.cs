@@ -15,7 +15,6 @@ public abstract class ALevelGenerator
     protected Func<bool> funcIsNotBetween;
 
     protected const int SHIFT_ERROR = 3;
-    protected const int COUNT_ERROR = 40;
 
     public ALevelGenerator(Vector2Int size)
     {
@@ -78,7 +77,7 @@ public abstract class ALevelGenerator
     {
         bool result = false;
         int error = 0, count;
-        while (_jewelsCurrent.Count < _countCurrent && error < COUNT_ERROR)
+        while (_jewelsCurrent.Count < _countCurrent && error < _countCurrent)
         {
             if (result = TryAdd())
             {

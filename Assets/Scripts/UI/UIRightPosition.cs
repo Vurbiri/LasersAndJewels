@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class UIRightPosition : MonoBehaviour
 {
     [SerializeField] private RectTransform _canvas;
@@ -8,7 +9,7 @@ public class UIRightPosition : MonoBehaviour
     private RectTransform _thisRectTransform;
     private float _widthOld = 0f;
 
-    private void Start()
+    private void Awake()
     {
         _thisRectTransform = GetComponent<RectTransform>();
     }

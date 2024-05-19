@@ -30,7 +30,7 @@ public abstract class ALevelTwo : ALevel
         }
         while (++attempts < maxAttempts && chain == null);
 
-        Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");
+        Debug.Log($"{Type} count: {_count}. attempts: {attempts} / {maxAttempts} \n====================================");
 
         _positionsChain = chain;
         return (_positionsChain = chain) != null;
@@ -61,10 +61,10 @@ public abstract class ALevelTwo : ALevel
             }
             while (_isGeneration && ++attempts < maxAttempts && chain.Result == null);
 
-            waitResult.SetResult((_positionsChain = chain.Result) != null);
-            _isGeneration = false;
+            Debug.Log($"{Type} count: {_count}. attempts: {attempts} / {maxAttempts} \n====================================");
 
-            Debug.Log("attempts: " + attempts + "/" + maxAttempts + "\n============================");
+            _isGeneration = false;
+            waitResult.SetResult((_positionsChain = chain.Result) != null);
         }
         #endregion
     }
