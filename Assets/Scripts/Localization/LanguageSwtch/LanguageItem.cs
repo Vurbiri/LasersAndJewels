@@ -2,24 +2,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Toggle))]
 public class LanguageItem : MonoBehaviour
 {
-    [SerializeField] private Toggle _toggle;
     [SerializeField] private Image _icon;
     [SerializeField] private TMP_Text _name;
-    [SerializeField] private Animator _animator;
-    [Space]
-    [SerializeField] private RuntimeAnimatorController _controllerClockwise;
-    [SerializeField] private RuntimeAnimatorController _controllerCounterclockwise;
 
+    private Toggle _toggle;
     private bool _isSave;
     private int _id = -1;
     private Localization _localization;
     private SettingsGame _settings;
     
-
     private void Awake()
     {
+        _toggle = GetComponent<Toggle>();
         _localization = Localization.InstanceF;
         _settings = SettingsGame.InstanceF;
     }
@@ -31,8 +28,6 @@ public class LanguageItem : MonoBehaviour
         _name.text = languageType.Name;
         _id = languageType.Id;
         _isSave = isSave;
-
-        _animator.runtimeAnimatorController = _id % 2 == 0 ? _controllerCounterclockwise : _controllerClockwise;
 
         _toggle.SetIsOnWithoutNotify(_localization.CurrentId == _id);
         _toggle.group = toggleGroup;

@@ -61,6 +61,12 @@ public class Laser : APooledObject<Laser>, ILaser
         _laserRay.SetPositions(_positionsRay);
     }
 
+    public override void Deactivate()
+    {
+        _laserRay.positionCount = 0;
+        base.Deactivate();
+    }
+
     public IEnumerator Deactivate_Coroutine()
     {
         Color color = _laserRay.startColor;

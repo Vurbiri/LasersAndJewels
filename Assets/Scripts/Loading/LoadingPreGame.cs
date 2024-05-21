@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LoadingPreGame : MonoBehaviour
 {
-    [SerializeField] private string _keySave = "FDL";
+    [SerializeField] private string _keySave = "LAJ";
     [Space]
     [SerializeField, Scene] private int _sceneDesktop = 0;
     [SerializeField, Scene] private int _sceneMobile = 0;
@@ -24,6 +24,7 @@ public class LoadingPreGame : MonoBehaviour
         YandexSDK ysdk = YandexSDK.InstanceF;
         Localization localization = Localization.InstanceF;
         SettingsGame settings = SettingsGame.InstanceF;
+        DataGame dataGame = DataGame.InstanceF;
         LoadScene loadScene = null;
 
         if (!localization.Initialize())
@@ -55,7 +56,8 @@ public class LoadingPreGame : MonoBehaviour
         Message.Log("End LoadingPreGame");
         loadScene.End();
 
-        #region Local Functions
+        #region Local: InitializeYSDKCoroutine(), CreateStoragesCoroutine(), ProgressLoad(float value)
+        //==================================
         IEnumerator InitializeYSDKCoroutine()
         {
             WaitResult<bool> waitResult;
@@ -75,6 +77,7 @@ public class LoadingPreGame : MonoBehaviour
             if (!waitResult.Result)
                 Message.Log("Leaderboards - initialization error!");
         }
+        //==================================
         IEnumerator CreateStoragesCoroutine()
         {
             if (!Storage.StoragesCreate())
@@ -97,21 +100,22 @@ public class LoadingPreGame : MonoBehaviour
                 else
                     Message.Log("Storage not initialize");
 
-                settings.IsFirstStart = !Load(waitReturn.Return);
+                dataGame.IsFirstStart = !Load(waitReturn.Return);
 
-                #region Local Functions
+                #region Local Load(bool load)
+                //====================
                 bool Load(bool load)
                 {
                     bool result = false;
 
                     result = settings.Initialize(load) || result;
-                    return DataGame.InstanceF.Initialize(load) || result;
+                    return dataGame.Initialize(load) || result;
                 }
                 #endregion
             }
             #endregion
         }
-
+        //==================================
         void ProgressLoad(float value)
         {
             if (loadScene != null)

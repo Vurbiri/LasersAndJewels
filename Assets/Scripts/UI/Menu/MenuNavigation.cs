@@ -38,7 +38,8 @@ public class MenuNavigation : MonoBehaviour
             _button.onClick.AddListener(() =>
             {
                 if (closeMenu && _closeCurrentMenu) closeMenu.SetActive(false);
-                if (_openMenu) _openMenu.SetActive(!_openMenu.activeSelf);
+                if (_openMenu) _openMenu.SetActive(true);
+                //if (_openMenu) _openMenu.SetActive(!_openMenu.activeSelf);
             });
    
         }

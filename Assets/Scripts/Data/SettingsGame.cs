@@ -23,8 +23,7 @@ public class SettingsGame : ASingleton<SettingsGame>
     public float MaxValue => _audioMaxValue;
 
     public bool IsDesktop { get; private set; } = true;
-    public bool IsFirstStart { get; set; } = true;
-
+    
     private YandexSDK _ysdk;
     private Localization _localization;
     private readonly Dictionary<AudioType, IVolume> _volumes = new(Enum<AudioType>.Count);

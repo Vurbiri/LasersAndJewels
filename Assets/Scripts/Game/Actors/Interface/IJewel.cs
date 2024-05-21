@@ -15,5 +15,6 @@ public interface IJewel
     public bool CheckType(int idType);
     public bool ShowHint();
 
+    public void Deactivate();
     public IEnumerator Deactivate_Coroutine();
 }

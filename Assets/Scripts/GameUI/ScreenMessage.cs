@@ -10,8 +10,6 @@ public class ScreenMessage : MonoBehaviour
     [SerializeField] private Message _gameLevel;
     [SerializeField] private Message _levelComplete;
     [SerializeField] private Message _hint;
-    [Space]
-    [SerializeField] private Message _gameOver;
 
     public void Initialize()
     {
@@ -20,8 +18,6 @@ public class ScreenMessage : MonoBehaviour
         _gameLevel.Initialize(_textCaption, sound.PlayNewLevel);
         _levelComplete.Initialize(_textCaption, sound.PlayLevelComplete);
         _hint.Initialize(_textCaption, sound.PlayHint);
-
-        _gameOver.Initialize(_textCaption, sound.PlayGameOver);
 
         Clear();
     }
@@ -74,23 +70,10 @@ public class ScreenMessage : MonoBehaviour
         #endregion
     }
 
-    public WaitActivate GameOver()
+    public void ResetMessage()
     {
-        WaitActivate wait = new();
-        gameObject.SetActive(true);
-        StartCoroutine(GameOver_Coroutine());
-        return wait;
-
-        #region Local GameOver_Coroutine()
-        //=================================
-        IEnumerator GameOver_Coroutine()
-        {
-            yield return _gameOver.Send_Wait();
-            yield return _gameOver.Fide();
-            wait.Activate();
-            Clear();
-        }
-        #endregion
+        StopAllCoroutines();
+        Clear();
     }
     
     private void Clear()

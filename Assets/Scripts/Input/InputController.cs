@@ -4,6 +4,11 @@ using UnityEngine.UI;
 
 public class InputController : MonoBehaviour
 {
+    [SerializeField] private Button _buttonMenu;
+    [SerializeField] private KeyCode _keyMenu = KeyCode.Tab;
+    [SerializeField] private Button _buttonStart;
+    [SerializeField] private Button _buttonRestart;
+    [Space]
     [SerializeField] private Button _buttonHint;
     [SerializeField] private KeyCode _keyHint = KeyCode.H;
     [Space]
@@ -12,43 +17,52 @@ public class InputController : MonoBehaviour
 
     private Camera _camera;
 
-    private bool _isHint = false;
+    private bool _isMenu = false;
     
-    public bool IsHint
+    public bool IsMenu
     {
         set
         {
-            _isHint = value;
-            _buttonHint.interactable = value;
+            if (_isMenu == value)
+                return;
+            
+            _isMenu = value;
+            if (value)
+                EventToMenu?.Invoke();
+            else
+                EventContinue?.Invoke();
         }
     }
 
-
+    public event Action EventToMenu;
+    public event Action EventContinue;
+    public event Action EventRestart;
     public event Action EventHint;
 
     private void Awake()
     {
         _camera = Camera.main;
 
-        _buttonHint.onClick.AddListener(() => { if (_isHint) EventHint?.Invoke(); });
-        IsHint = false;
-
+        _buttonMenu.onClick.AddListener(OnButtonMenu);
+        _buttonStart.onClick.AddListener(() => IsMenu = false);
+        _buttonRestart.onClick.AddListener(() => { EventRestart?.Invoke(); _isMenu = false; });
+        _buttonHint.onClick.AddListener(() => { if (!_isMenu) EventHint?.Invoke(); });
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(_keyMenu))
+            OnButtonMenu();
 
-        if (_isHint && Input.GetKeyDown(_keyHint))
+        else if (_isMenu) return;
+
+        else if (Input.GetKeyDown(_keyHint))
             EventHint?.Invoke();
 
-
-        if (Input.GetMouseButtonDown(0))
+        else if (Input.GetMouseButtonDown(0))
             Click(true);
         else if (Input.GetMouseButtonDown(1))
             Click(false);
-
-        
-
 
         #region Local: Click(...)
         //======================
@@ -60,4 +74,6 @@ public class InputController : MonoBehaviour
         }
         #endregion
     }
+
+    private void OnButtonMenu() => IsMenu = !_isMenu;
 }

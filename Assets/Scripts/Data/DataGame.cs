@@ -28,6 +28,7 @@ public class DataGame : ASingleton<DataGame>
     public long MaxScore { get => _data.maxScore; private set { _data.maxScore = value; EventChangeMaxScore?.Invoke(value); } }
     public int MinCountJewel => _minJewel;
     public LevelData LevelData => new(_data.level, _data.type, _data.countJewel);
+    public bool IsFirstStart { get; set; } = true;
 
     public event Action<int> EventChangeHint;
     public event Action<long> EventChangeScore;
@@ -59,7 +60,11 @@ public class DataGame : ASingleton<DataGame>
     }
     public void Save(Action<bool> callback = null) => StartCoroutine(Storage.Save_Coroutine(_keySave, _data, callback));
 
-    public void StartLevel() => CalkTypeAndCountJewel();
+    public void StartLevel()
+    {
+        CalkTypeAndCountJewel();
+        _data.modeStart = GameModeStart.Continue;
+    }
 
     public void NextLevel()
     {
@@ -97,8 +102,10 @@ public class DataGame : ASingleton<DataGame>
         _isNewRecord = false;
         _types.SetCursor(_data.type);
         _maxAddHint = 0;
-
         Save();
+
+        EventChangeScore?.Invoke(0);
+        EventChangeHint?.Invoke(_hintStart);
     }
 
     private void CalkTypeAndCountJewel()

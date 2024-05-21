@@ -58,6 +58,17 @@ public class LevelTwoToOne : ALevelTwo
         return base.Run_Coroutine();
     }
 
+    public override void Reset()
+    {
+        base.Reset();
+
+        if (_laserTwo != null)
+        {
+            _laserTwo.Deactivate();
+            _laserTwo = null;
+        }
+    }
+
     public override IEnumerator Clear_Coroutine()
     {
         WaitAll waitAll = new(_actorsPool);

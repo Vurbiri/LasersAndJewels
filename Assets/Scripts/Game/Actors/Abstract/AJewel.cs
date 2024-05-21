@@ -90,11 +90,11 @@ public abstract class AJewel<T> : APooledObject<T>, IJewel where T : AJewel<T>
         _isVisited = false;
     }
 
-    //public override void Deactivate()
-    //{
-    //    Off();
-    //    base.Deactivate();
-    //}
+    public override void Deactivate()
+    {
+        Off();
+        base.Deactivate();
+    }
 
     public virtual IEnumerator Deactivate_Coroutine()
     {

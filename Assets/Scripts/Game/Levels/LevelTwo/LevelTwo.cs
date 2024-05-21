@@ -53,6 +53,17 @@ public class LevelTwo : ALevelTwo
         return isLevelComplete;
     }
 
+    public override void Reset()
+    {
+        base.Reset();
+
+        if (_laserTwo != null)
+        {
+            _laserTwo.Deactivate();
+            _laserTwo = null;
+        }
+    }
+
     public override IEnumerator Clear_Coroutine()
     {
         WaitAll waitAll = new(_actorsPool);

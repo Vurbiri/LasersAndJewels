@@ -50,6 +50,21 @@ public abstract class ALevel
 
     public abstract bool CheckChain();
 
+    public virtual void Reset()
+    {
+        _actorsPool.StopAllCoroutines();
+        _allowedHint = false;
+        
+        if(_laserOne == null)
+            return;
+
+        _area = new IJewel[_size.x, _size.y];
+        _laserOne.Deactivate();
+        _jewels.ForEach((j) => j.Deactivate());
+        _laserOne = null;
+        _jewels = null;
+    }
+
     public virtual IEnumerator Clear_Coroutine()
     {
         _allowedHint = false;

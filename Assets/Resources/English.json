@@ -4,44 +4,29 @@
 
   "LasersJewels": "Lasers And Jewels",
 
-  "Settings": "Settings",
   "Music": "Music",
   "SFX": "Sound",
+  "Restart": "Restart",
 
-  "Score": "Score",
-  "MScore": "Best",
-  "Attempts": "Attempts",
-  "Time": "Time",
-
-  "Game": "Game",
-  "Start": "Start",
-  "New": "New",
-  "Continue": "Continue",
   "Authorization": "Authorization",
 
-  "Rank": "Rank",
-  "Player": "Player",
   "Guest": "Guest",
   "Anonym": "Anonym",
-
-  "Menu": "Menu",
-  "GameOver": "Game over",
 
   "Level": "Level {0}",
   "LevelComplete": "Level complete",
   "Hint": "Hint",
+  "ToMenu": "To menu",
 
-  "Empty": "Empty",
-  "Error": "!ERROR!",
   "ErrorLogon": "Authorization failed",
   "ErrorStorage": "Error! Saving progress is not available!",
   "ErrorSave": "Save error!",
   "GoodSaveSettings": "Settings is saved",
   "GoodSave": "Game is saved",
-  "WarningAuthorization": "Cloud save, personalization and leaderboard are not available without authorization",
+  "WarningAuthorization": "Cloud save and personalization are not available without authorization",
 
-  "Leaderboard": "Seekers",
-
-  "Help": "Help",
-  "Control": "Control"
+  "Control": "Control",
+  "GameRules": "Game rules",
+  "Enjoy": "Have fun playing!",
+  "GameRulesText": "  The goal of the game is to arrange blocks of digits into clusters according to their value."
 }

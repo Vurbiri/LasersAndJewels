@@ -69,7 +69,7 @@ public partial class Localization : ASingleton<Localization>
         if (_language.TryGetValue(key, out string str))
             return str;
 
-        return "ERROR!" + key;
+        return "ERROR! " + key;
     }
 
     //public string GetTextFormat(string key, params object[] args) => string.Format(GetText(key), args);
@@ -90,7 +90,7 @@ public partial class Localization : ASingleton<Localization>
         return d.Result;
     }
 
-    #region Nested Classe
+    #region Nested ñlasses: LanguageType, StringComparer
     public class LanguageType
     {
         public int Id { get; private set; }

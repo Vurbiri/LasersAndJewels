@@ -11,18 +11,24 @@ public class GameArea : MonoBehaviour
     [SerializeField] private float _percentCountHint = 0.375f;
     [SerializeField] private int _baseMaxDistance = 7;
     [Space]
+    [SerializeField] private float _timeShowEnd = 2.375f;
+    [Space]
     [SerializeField] private ScreenMessage _screenMessage;
 
     private readonly Dictionary<LevelType, ALevel> _levels = new(3);
     private ALevel _currentLevel, _nextLevel;
     private int _nextCount, _minCount;
     private WaitResult<bool> _waitNextLevel;
+    private WaitForSeconds _delayShowEnd;
 
+    public event Action EventLevelStop;
     public event Action EventLevelEnd;
 
     public void Initialize(int minCount)
     {
         _minCount = minCount;
+
+        _delayShowEnd = new(_timeShowEnd);
 
         ActorsPool actorsPool = GetComponent<ActorsPool>();
         actorsPool.Initialize(OnSelected);
@@ -103,6 +109,16 @@ public class GameArea : MonoBehaviour
         return false;
     }
 
+    public void Restart()
+    {
+        StopAllCoroutines();
+        _screenMessage.ResetMessage();
+        if (_currentLevel != null)
+            _currentLevel.Reset();
+        if (_nextLevel != null)
+            _nextLevel.Reset();
+    }
+
     private void GenerateNext()
     {
         _waitNextLevel = _nextLevel.Generate_Wait(_nextCount, MaxDistance(_nextCount));
@@ -111,7 +127,7 @@ public class GameArea : MonoBehaviour
 
     private void OnCompleted(bool result)
     {
-        //_waitNextLevel.EventCompleted -= OnCompleted;
+        _waitNextLevel.EventCompleted -= OnCompleted;
 
         if (result) return;
 
@@ -129,9 +145,12 @@ public class GameArea : MonoBehaviour
 
     private IEnumerator LevelComplete_Coroutine()
     {
+        EventLevelStop?.Invoke();
+
         _screenMessage.LevelComplete();
+        yield return _delayShowEnd;
         yield return StartCoroutine(_currentLevel.Clear_Coroutine());
-       
+
         EventLevelEnd?.Invoke();
     }
 
