@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Scenes/01_GameDesktop.unity
     guid: 2ae3a599569fc774f808adc9021dd7a1
+  - enabled: 1
+    path: Assets/_Scenes/02_GameMobile.unity
+    guid: b079a97d0a9ed884eaac5a00cc748d6b
   m_configObjects: {}

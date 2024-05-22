@@ -3,7 +3,6 @@ var YandexPlugin =
     IsInitializeJS: function () { return func.isInitialize(); },
     IsPlayerJS: function () { return func.isPlayer(); },
     IsLogOnJS: function () { return func.isLogOn(); },
-    IsLeaderboardJS: function () { return func.isLeaderboard(); },
     IsDesktopJS: function () { return vars.ysdk.deviceInfo.isDesktop(); },
     IsMobileJS: function () { return vars.ysdk.deviceInfo.isMobile() || vars.ysdk.deviceInfo.isTablet(); },
 
@@ -133,210 +132,6 @@ var YandexPlugin =
 
     },
 
-    InitLeaderboardsJS: function () {
-        if (!func.isInitialize()) {
-            console.log("-- InitLeaderboards: not ysdk --");
-            window.unityInstance.SendMessage('YandexSDK', 'OnEndInitLeaderboards', 0);
-            return;
-        }
-
-        vars.ysdk
-            .getLeaderboards()
-            .then((_lb) => {
-                console.log("++ Leaderboards initialized ++");
-                vars.lb = _lb;
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndInitLeaderboards', 1);
-            })
-            .catch((message) => {
-                console.log("-- InitLeaderboards: " + message + "  --");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndInitLeaderboards', 0);
-            });
-    },
-    SetScoreJS: function (lbName, score) {
-        if (!func.isLeaderboard()) {
-            console.log("-- SetScore: not lb --");
-            window.unityInstance.SendMessage('YandexSDK', 'OnEndSetScore', 0);
-            return;
-        }
-
-        var lbn = UTF8ToString(lbName);
-        vars.lb
-            .setLeaderboardScore(lbn, score)
-            .then(() => {
-                console.log("++ SetScore ++");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndSetScore', 1);
-            })
-            .catch((message) => {
-                console.log("-- SetScore: " + message + "  --");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndSetScore', 0);
-            });
-    },
-    GetPlayerResultJS: function (lbName) {
-        if (!func.isLeaderboard())
-        {
-            console.log("-- GetPlayerResult: not lb --");
-            window.unityInstance.SendMessage('YandexSDK', 'OnEndGetPlayerResult', '');
-        }
-
-        var lbn = UTF8ToString(lbName);
-        vars.lb
-            .getLeaderboardPlayerEntry(lbn)
-            .then((res) => {
-                var obj = { rank: res.rank, score: res.score };
-                var json = JSON.stringify(obj);
-                console.log("++ GetPlayerResult ++");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndGetPlayerResult', json);
-            })
-            .catch((message) => {
-                var code = message.code;
-                console.log("-- GetPlayerResult: " + message.code + "  --");
-                if (code === 'LEADERBOARD_PLAYER_NOT_PRESENT') {
-                    var obj = { rank: 0, score: 0 };
-                    var json = JSON.stringify(obj);
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndGetPlayerResult', json);
-
-                }
-                else {
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndGetPlayerResult', '');
-                }
-            });
-    },
-    GetLeaderboardJS: function (lbName, qTop, includeUser, qAround, size) {
-        if (!func.isLeaderboard()) {
-            console.log("-- Leaderboards: not lb --");
-            window.unityInstance.SendMessage('GetLeaderboard', 'OnEndGetLeaderboard', '');
-            return;
-        }
-
-        var lbn = UTF8ToString(lbName);
-        var sSize = UTF8ToString(size);
-        var arg;
-        if (includeUser)
-            arg = { quantityTop: qTop, includeUser: true, quantityAround: qAround };
-        else
-            arg = { quantityTop: qTop };
-
-        vars.lb
-            .getLeaderboardEntries(lbn, arg)
-            .then((res) => {
-                if (func.isEmpty(res)) {
-                    console.log("++ GetLeaderboard: NULL ++");
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndGetLeaderboard', '');
-                } else {
-                    var obj = {
-                        userRank: res.userRank,
-                        table: Array.from(res.entries, (e) => { return { rank: e.rank, score: e.score, name: e.player.publicName, avatarURL: e.player.getAvatarSrc(sSize) } })
-                    };
-                    var json = JSON.stringify(obj);
-                    console.log("++ GetLeaderboard ++");
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndGetLeaderboard', json);
-                }
-            })
-            .catch((message) => {
-                console.log("-- Leaderboards: " + message + "  --");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndGetLeaderboard', '');
-            });
-    },
-
-    CanShortcutJS: function () {
-        if (!func.isInitialize()) {
-            console.log("-- CanShortcut: not ysdk --");
-            window.unityInstance.SendMessage('YandexSDK', 'OnEndCanShortcut', 0);
-            return;
-        }
-
-        vars.ysdk.shortcut
-            .canShowPrompt()
-            .then((prompt) => {
-                console.log('++ CanShortcut?: ', prompt.canShow);
-                if (prompt.canShow)
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndCanShortcut', 1);
-                else
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndCanShortcut', 0);
-            })
-            .catch((message) => {
-                console.log("-- CanShortcut: " + message + "  --");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndCanShortcut', 0);
-            });
-    },
-    CreateShortcutJS: function () {
-        if (!func.isInitialize()) {
-            console.log("-- CreateShortcut: not ysdk --");
-            window.unityInstance.SendMessage('YandexSDK', 'OnEndCreateShortcut', 0);
-            return;
-        }
-
-        vars.ysdk.shortcut
-            .showPrompt()
-            .then((result) => {
-                console.log('++ CreateShortcut?: ', result);
-                if (result.outcome === 'accepted')
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndCreateShortcut', 1);
-                else
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndCreateShortcut', 0);
-            })
-            .catch((message) => {
-                console.log("-- CreateShortcut: " + message + "  --");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndCreateShortcut', 0);
-            });
-    },
-    CanReviewJS: function () {
-        if (!func.isInitialize()) {
-            console.log("-- CanReview: not ysdk --");
-            window.unityInstance.SendMessage('YandexSDK', 'OnEndCanReview', 0);
-            return;
-        }
-
-        vars.ysdk.feedback
-            .canReview()
-            .then(({ value, reason }) => {
-                if (value) {
-                    console.log("++ CanReview: " + value + "  ++");
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndCanReview', 1);
-                }
-                else {
-                    console.log("+- CanReview: " + reason + "  -+");
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndCanReview', 0);
-                }
-            })
-            .catch((message) => {
-                console.log("-- CanReview: " + message + "  --");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndCanReview', 0);
-            });
-    },
-    RequestReviewJS: function () {
-        if (!func.isInitialize()) {
-            console.log("-- RequestReview: not ysdk --");
-            window.unityInstance.SendMessage('YandexSDK', 'OnEndRequestReview', 0);
-            return;
-        }
-
-        vars.ysdk.feedback
-            .canReview()
-            .then(({ value, reason }) => {
-                if (value) {
-                    vars.ysdk.feedback
-                        .requestReview()
-                        .then(({ feedbackSent }) => {
-                            console.log("++ RequestReview: " + feedbackSent + "  ++");
-                            window.unityInstance.SendMessage('YandexSDK', 'OnEndRequestReview', feedbackSent ? 1 : 0);
-                        })
-                        .catch((message) => {
-                            console.log("-- RequestReview: " + message + "  --");
-                            window.unityInstance.SendMessage('YandexSDK', 'OnEndRequestReview', 0);
-                        });
-                }
-                else {
-                    console.log("-- RequestReview: " + reason + "  --");
-                    window.unityInstance.SendMessage('YandexSDK', 'OnEndRequestReview', 0);
-                }
-            })
-            .catch((message) => {
-                console.log("-- RequestReview: " + message + "  --");
-                window.unityInstance.SendMessage('YandexSDK', 'OnEndRequestReview', 0);
-            });
-    },
-
     SaveJS: function (key, data) {
         if (!func.isPlayer()) {
             console.log("-- SaveYSDK: not player --");
@@ -389,63 +184,7 @@ var YandexPlugin =
             });
 
     },
-    
-    ShowFullscreenAdvJS: function () {
-        if (!func.isInitialize()) {
-            console.log("-- ShowFullscreenAdv: not ysdk --");
-            window.unityInstance.SendMessage('YMoney', 'OnEndShowFullscreenAdv', 0);
-            return;
-        }
-
-        vars.ysdk.adv
-            .showFullscreenAdv({
-                callbacks: {
-                    onOpen: () => {
-                        console.log('== ShowFullscreenAdv - Open ==');
-                    },
-                    onClose: (wasShown) => {
-                        console.log("++ ShowFullscreenAdv: " + wasShown + "  ++");
-                        window.unityInstance.SendMessage('YMoney', 'OnEndShowFullscreenAdv', wasShown ? 1 : 0);
-                    },
-                    onError: (error) => {
-                        console.log("-- ShowFullscreenAdv: " + error + "  --");
-                        window.unityInstance.SendMessage('YMoney', 'OnEndShowFullscreenAdv', 0);
-                    }
-                }
-            });
-    },
-    ShowRewardedVideoJS: function () {
-        if (!func.isInitialize()) {
-            console.log("-- ShowRewardedVideo: not ysdk --");
-            window.unityInstance.SendMessage('YMoney', 'OnRewardRewardedVideo', 0);
-            window.unityInstance.SendMessage('YMoney', 'OnCloseRewardedVideo', 0);
-            return;
-        }
-
-        var reward = 0;
-        vars.ysdk.adv
-            .showRewardedVideo({
-                callbacks: {
-                    onOpen: () => {
-                        console.log('== ShowRewardedVideo - Video ad open ==');
-                    },
-                    onRewarded: () => {
-                        console.log('++ ShowRewardedVideo - Rewarded! ++');
-                        reward = 1;
-                        window.unityInstance.SendMessage('YMoney', 'OnRewardRewardedVideo', 1);
-                    },
-                    onClose: () => {
-                        console.log('== ShowRewardedVideo - Video ad closed ==');
-                        window.unityInstance.SendMessage('YMoney', 'OnCloseRewardedVideo', reward);
-                    },
-                    onError: (error) => {
-                        console.log("-- ShowRewardedVideo: " + error + "  --");
-                        window.unityInstance.SendMessage('YMoney', 'OnRewardRewardedVideo', 0);
-                        window.unityInstance.SendMessage('YMoney', 'OnCloseRewardedVideo', 0);
-                    }
-                }
-            })
-    },
+ 
 
     ShowBannerAdvJS: function () {
         if (!func.isInitialize()) {
@@ -478,7 +217,6 @@ var YandexPlugin =
         isInitialize: function () { return !func.isEmpty(vars.ysdk); },
         isPlayer: function () { return func.isInitialize() && !func.isEmpty(vars.player); },
         isLogOn: function () { return func.isPlayer() && !(vars.player.getMode() === 'lite'); },
-        isLeaderboard: function () { return func.isLogOn() && !func.isEmpty(vars.lb); },
 
         isEmpty: function (obj) {
             if (!obj)
@@ -491,7 +229,6 @@ var YandexPlugin =
     {
         ysdk: null,
         player: null,
-        lb: null,
     },
 }
     

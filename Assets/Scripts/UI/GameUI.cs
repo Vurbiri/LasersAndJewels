@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Windows;
 
 public class GameUI : MonoBehaviour
 {
@@ -8,8 +7,12 @@ public class GameUI : MonoBehaviour
     [SerializeField] private GameObject _settings;
     [SerializeField] private GameObject _help;
 
+    private SoundSingleton _sound;
+
     private void Start()
     {
+        _sound = SoundSingleton.Instance;
+
         _input.EventToMenu += Open;
         _input.EventContinue += Close;
         _input.EventRestart += Close;
@@ -30,6 +33,7 @@ public class GameUI : MonoBehaviour
 
     public void Open()
     {
+        _sound.PlayMenu();
         gameObject.SetActive(true);
 
         _settings.SetActive(true);
@@ -38,6 +42,7 @@ public class GameUI : MonoBehaviour
 
     public void Close()
     {
+        _sound.PlayMenu();
         gameObject.SetActive(false);
     }
 }

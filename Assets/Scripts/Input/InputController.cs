@@ -21,6 +21,7 @@ public class InputController : MonoBehaviour
     
     public bool IsMenu
     {
+        get => _isMenu;
         set
         {
             if (_isMenu == value)

@@ -56,9 +56,6 @@ public class LogOnPanel : MonoBehaviour
                 }
             }
 
-            if (!_ysdk.IsLeaderboard)
-                yield return _ysdk.InitLeaderboards();
-
             resultAuthorization = true;
 
         }

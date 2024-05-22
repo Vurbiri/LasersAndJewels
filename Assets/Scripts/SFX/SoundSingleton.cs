@@ -11,10 +11,7 @@ public class SoundSingleton : ASingleton<SoundSingleton>, IVolume
     [SerializeField] private AudioClip _clipLaserOff;
     [SerializeField] private AudioClip _clipLaserFalling;
     [SerializeField] private AudioClip _clipCheat;
-    [Space]
-    [SerializeField] private AudioClip _clipGameOver;
-    [SerializeField] private AudioClip _clipStart;
-    [SerializeField] private AudioClip _clipError;
+    [SerializeField] private AudioClip _clipMenu;
 
     private AudioSource _thisAudio;
 
@@ -33,7 +30,6 @@ public class SoundSingleton : ASingleton<SoundSingleton>, IVolume
     protected override void Awake()
     {
         base.Awake();
-
         _thisAudio = GetComponent<AudioSource>();
     }
 
@@ -45,12 +41,7 @@ public class SoundSingleton : ASingleton<SoundSingleton>, IVolume
     public void PlayLaserOff() => Play(_clipLaserOff);
     public void PlayLaserFalling() => Play(_clipLaserFalling);
     public void PlayCheat() => Play(_clipCheat);
-
-
-    public void PlayGameOver() => Play(_clipGameOver);
-    public void PlayStart() => Play(_clipStart);
-    public void PlayError() => Play(_clipError);
-
+    public void PlayMenu() => Play(_clipMenu);
 
     private void Play(AudioClip clip)
     {

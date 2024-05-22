@@ -38,10 +38,7 @@ public class DataGame : ASingleton<DataGame>
     {
         bool result = isLoad && Load();
         if (!result)
-        {
             _data = new(_minJewel, _hintStart);
-            ResetGame();
-        }
 
         _types.SetCursor(_data.type);
         _isNewRecord = _data.score > _data.maxScore;
@@ -69,11 +66,11 @@ public class DataGame : ASingleton<DataGame>
     public void NextLevel()
     {
         ScoreAdd();
-
         _data.level++;
-        CalkTypeAndCountJewel();
 
         Save((bool result) => Message.Saving("GoodSave", result));
+
+        CalkTypeAndCountJewel();
 
         #region Local: OnLevelStop_Coroutine()
         //=================================
@@ -142,20 +139,28 @@ public class DataGame : ASingleton<DataGame>
         [JsonProperty("msc")]
         public long maxScore = 0;
 
-        [JsonConstructor]
-        public GameSave(GameModeStart modeStart, int level, LevelType type, int hint, int countJewel, int score, int maxScore) 
-        {
-            this.modeStart = modeStart;
-            this.level = level;
-            this.type = type;
-            this.hint = hint;
-            this.countJewel= countJewel;
-            this.score = score;
-            this.maxScore = maxScore;
-        }
+        //[JsonConstructor]
+        //public GameSave(GameModeStart gms, int lvl, LevelType ltp, int hnt, int cnt, int scr, int msc)
+        ////public GameSave(GameModeStart modeStart, int level, LevelType type, int hint, int countJewel, int score, int maxScore)
+        //{
+        //    Message.Log($"GameSave: modeStart-{gms} | level-{lvl} | type-{ltp} | hint-{hnt} | countJewel-{cnt} | score-{scr} | maxScore-{msc} ");
+
+        //    this.modeStart = gms;
+        //    this.level = lvl;
+        //    this.type = ltp;
+        //    this.hint = hnt;
+        //    this.countJewel = cnt;
+        //    this.score = scr;
+        //    this.maxScore = msc;
+        //}
         public GameSave(int countJewel, int hint)
         {
             Reset(countJewel, hint);
+            maxScore = 0;
+        }
+        public GameSave()
+        {
+            Reset(14, 3);
             maxScore = 0;
         }
 

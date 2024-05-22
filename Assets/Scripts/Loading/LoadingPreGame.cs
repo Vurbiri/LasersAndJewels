@@ -72,10 +72,6 @@ public class LoadingPreGame : MonoBehaviour
             yield return (waitResult = ysdk.InitPlayer());
             if (!waitResult.Result)
                 Message.Log("Player - initialization error!");
-
-            yield return (waitResult = ysdk.InitLeaderboards());
-            if (!waitResult.Result)
-                Message.Log("Leaderboards - initialization error!");
         }
         //==================================
         IEnumerator CreateStoragesCoroutine()
@@ -101,6 +97,8 @@ public class LoadingPreGame : MonoBehaviour
                     Message.Log("Storage not initialize");
 
                 dataGame.IsFirstStart = !Load(waitReturn.Return);
+
+                Message.Log("Load End");
 
                 #region Local Load(bool load)
                 //====================

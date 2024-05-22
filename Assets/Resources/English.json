@@ -2,7 +2,7 @@
   "Id": "1",
   "CodeISO639_1": "en",
 
-  "LasersJewels": "Lasers And Jewels",
+  "LasersJewels": "Lasers and jewels",
 
   "Music": "Music",
   "SFX": "Sound",
@@ -28,5 +28,5 @@
   "Control": "Control",
   "GameRules": "Game rules",
   "Enjoy": "Have fun playing!",
-  "GameRulesText": "  The goal of the game is to arrange blocks of digits into clusters according to their value."
+  "GameRulesText": "  The goal of the game is to guide the laser through all the jewels to the last one."
 }

@@ -29,13 +29,5 @@ public static class ExtensionsVector
         self.y = x;
     }
 
-public static Vector3 ToVector3(this Vector2Int self) => new(self.x, self.y, 0f);
-
-    public static Vector2Int ToVector2Int(this Vector3 self) => new(Mathf.RoundToInt(self.x), Mathf.RoundToInt(self.y));
-    public static Vector2Int ToVector2Int(this Vector2 self) => new(Mathf.RoundToInt(self.x), Mathf.RoundToInt(self.y));
-
-    
-
-    public static void RandomRange(this ref Vector2Int self, Vector2Int minInclusive, Vector2Int maxExclusive) => self = new(Random.Range(minInclusive.x, maxExclusive.x), Random.Range(minInclusive.y, maxExclusive.y));
-
+    public static Vector3 ToVector3(this Vector2Int self) => new(self.x, self.y, 0f);
 }

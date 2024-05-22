@@ -23,11 +23,11 @@ public class JsonToYandex : ASaveLoadJsonTo
 
         yield return (waitResult = _ysdk.Load(_key));
         json = waitResult.Result;
-
+        
         if (!string.IsNullOrEmpty(json))
         {
             Return<Dictionary<string, string>> d = Deserialize<Dictionary<string, string>>(json);
-
+            
             if (d.Result)
             {
                 _saved = d.Value;

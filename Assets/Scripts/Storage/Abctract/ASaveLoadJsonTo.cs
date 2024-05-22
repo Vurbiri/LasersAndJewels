@@ -13,7 +13,7 @@ public abstract class ASaveLoadJsonTo
 
     public virtual Return<T> Load<T>(string key) where T : class
     {
-        if ( _saved.TryGetValue(key, out string json))
+        if (_saved.TryGetValue(key, out string json))
             return Deserialize<T>(json);
 
         return Return<T>.Empty;

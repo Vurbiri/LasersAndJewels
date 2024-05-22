@@ -430,13 +430,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isNotDestroying: 1
-  _lbName: lbFindLoner
-  _playerName: Best in the Best
+  _playerName: Best of the Best
   _isDesktop: 1
   _isLogOn: 1
   _lang: ru
   _isInitialize: 1
-  _isLeaderboard: 1
   _isPlayer: 1
 --- !u!4 &470621065
 Transform:
@@ -629,8 +627,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 9e32bed4354ee284785e950309e531f2, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 77cc0df8d3711b846897ae1427622532, type: 3}
-  m_PlayOnAwake: 0
+  m_audioClip: {fileID: 8300000, guid: 6e555f95a27b58a47bc115a4cd66331e, type: 3}
+  m_PlayOnAwake: 1
   m_Volume: 0.504
   m_Pitch: 1
   Loop: 1
@@ -817,9 +815,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c915583dd8e761f4ab53c1ede6f5d067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _keySave: LAJ
+  _keySave: LAJtest10
   _sceneDesktop: 1
-  _sceneMobile: 1
+  _sceneMobile: 2
   _slider: {fileID: 8094356267688871992}
   _logOnPanel: {fileID: 1694782730}
 --- !u!4 &1307781868
@@ -1253,9 +1251,7 @@ MonoBehaviour:
   _clipLaserOff: {fileID: 8300000, guid: 6864722bebed8d749acbf24145db94dc, type: 3}
   _clipLaserFalling: {fileID: 8300000, guid: f5018760fb31159458619494ee64b005, type: 3}
   _clipCheat: {fileID: 8300000, guid: 39e10db952d8a02408734b454274a772, type: 3}
-  _clipGameOver: {fileID: 8300000, guid: 7175a9b546ea88b4893a69824903074e, type: 3}
-  _clipStart: {fileID: 8300000, guid: 3497d7b22dd26674da57f1c21449c3bf, type: 3}
-  _clipError: {fileID: 8300000, guid: f49e368a841bde24d8475e32aaa0dec0, type: 3}
+  _clipMenu: {fileID: 8300000, guid: 08695dee322415b45aa74bf3a070a861, type: 3}
 --- !u!4 &1461806351
 Transform:
   m_ObjectHideFlags: 0

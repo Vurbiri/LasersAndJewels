@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 using static UnityEngine.Networking.UnityWebRequest;
 
 public static class Storage
