@@ -19,6 +19,7 @@ public class LevelTwo : ALevelTwo
     public override void Create()
     {
         _colorGenerator.GenerateTwo();
+        _count = _positionsChain.One.Count + _positionsChain.Two.Count + 2;
         _jewels = new(_count);
 
         Spawn(_positionsChain.One, ref _laserOne, TYPE_ONE);

@@ -82,12 +82,6 @@ public class ScreenMessage : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void OnDestroy()
-    {
-        _gameLevel.OnDestroy();
-        _levelComplete.OnDestroy();
-    }
-
     #region Nested classes
     //********************************************
     [Serializable]
@@ -131,10 +125,6 @@ public class ScreenMessage : MonoBehaviour
             return new(_fadeDuration);
         }
 
-        public void OnDestroy()
-        {
-            _caption.OnDestroy();
-        }
 
         #region Nested Classe
         //*******************************
@@ -146,56 +136,28 @@ public class ScreenMessage : MonoBehaviour
 
             private TMP_Text _text;
             private Localization _localization;
-            private string _value = null;
-            private bool _isActive = false;
 
             public void Initialize(TMP_Text text)
             {
                 _text = text;
                 _localization = Localization.Instance;
-                _localization.EventSwitchLanguage += ReLocalize;
             }
 
             public void Send(float appearDuration)
             {
-                _value = null;
-                _text.text = (_isActive = !string.IsNullOrEmpty(_key)) ? _localization.GetText(_key) : string.Empty;
-                if (_isActive)
-                    _text.Appear(_color, appearDuration);
+                _text.text = _localization.GetText(_key);
+                _text.Appear(_color, appearDuration);
             }
 
             public void SendFormat(string value, float appearDuration)
             {
-                _value = value;
-                _text.text = (_isActive = !string.IsNullOrEmpty(_key)) ? _localization.GetTextFormat(_key, value) : string.Empty;
-                if (_isActive)
-                    _text.Appear(_color, appearDuration);
+                _text.text = _localization.GetTextFormat(_key, value);
+                _text.Appear(_color, appearDuration);
             }
 
             public void Fade(float fadeDuration)
             {
-                if (!_isActive)
-                    return;
-
-                _isActive = false;
                 _text.Fade(_color, fadeDuration);
-            }
-
-            public void OnDestroy()
-            {
-                if(Localization.Instance != null)
-                    _localization.EventSwitchLanguage -= ReLocalize;
-            }
-
-            private void ReLocalize()
-            {
-                if (!_isActive)
-                    return;
-
-                if (_value != null)
-                    _text.text = _localization.GetTextFormat(_key, _value);
-                else
-                    _text.text = _localization.GetText(_key);
             }
         }
         #endregion

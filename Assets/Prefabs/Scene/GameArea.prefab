@@ -68,7 +68,7 @@ MonoBehaviour:
     _caption:
       _key: Hint
       _color: {r: 0.5254902, g: 0.29803923, b: 0.84313726, a: 1}
-    _timeMessage: 1.5
+    _timeMessage: 1.75
     _appearDuration: 0.3
     _fadeDuration: 0.2
 --- !u!1 &3380124858066888058
@@ -424,7 +424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _size: {x: 10, y: 7}
-  _percentCountHint: 0.4
+  _percentCountHint: 0.42
   _baseMaxDistance: 7
   _timeShowEnd: 2.375
   _screenMessage: {fileID: 759900690128913398}

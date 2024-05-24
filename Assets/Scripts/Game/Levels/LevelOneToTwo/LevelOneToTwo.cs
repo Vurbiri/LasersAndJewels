@@ -18,7 +18,8 @@ public class LevelOneToTwo : ALevelTwo
     public override void Create()
     {
         _colorGenerator.GenerateThree();
-        _jewels = new(_count--);
+        _count = _positionsChain.One.Count + _positionsChain.Two.Count + 1;
+        _jewels = new(_count);
 
         int connect = _positionsChain.Branch.Connect;
         PositionsChainOne jChain = _positionsChain.One;

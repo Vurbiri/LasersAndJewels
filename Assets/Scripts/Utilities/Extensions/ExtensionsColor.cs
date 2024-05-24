@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 public static class ExtensionsColor
 {
     public static Color Brightness(this Color self, float brightness)

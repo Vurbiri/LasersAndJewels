@@ -278,13 +278,12 @@ MonoBehaviour:
   _moduleOutA:
     _module: {fileID: 2519673113881247839}
     _laserRay: {fileID: 8196943220265025423}
-    _alfaRay: 0.85
   _moduleOutB:
     _module: {fileID: 530374138033253340}
     _laserRay: {fileID: 4665437303616274601}
-    _alfaRay: 0.85
-  _moduleIn: {fileID: 3026952538956819288}
+  _alfaRay: 0.85
   _durationHideRays: 1
+  _moduleIn: {fileID: 3026952538956819288}
 --- !u!114 &4927570616847215848 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4452824055566430318, guid: 5a5ebc376dbd20c459bb1507eeb11e9f, type: 3}

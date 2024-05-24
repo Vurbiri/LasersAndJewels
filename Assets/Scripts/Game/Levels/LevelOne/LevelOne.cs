@@ -17,22 +17,20 @@ public class LevelOne : ALevel
 
     public override bool Generate(int count, int maxDistance)
     {
-        _count = count;
-
         PositionsChainOne chain;
         int attempts = 0, maxAttempts = count << SHIFT_ATTEMPS;
 
         do chain = _generator.Generate(count, maxDistance);
         while (++attempts < maxAttempts && chain == null);
 
-        Debug.Log($"{Type} count: {_count}. attempts: {attempts} / {maxAttempts} \n====================================");
+        Debug.Log($"{Type} count: {count}. attempts: {attempts} / {maxAttempts} \n====================================");
 
         return (_positionsChain = chain) != null;
     }
     public override WaitResult<bool> Generate_Wait(int count, int maxDistance)
     {
         WaitResult<bool> waitResult = new();
-        _count = count;
+
         _isGeneration = true;
         _actorsPool.StartCoroutine(Generate_Coroutine());
         return waitResult;
@@ -47,7 +45,7 @@ public class LevelOne : ALevel
             do yield return chain = _generatorC.Generate_Wait(count, maxDistance);
             while (_isGeneration && ++attempts < maxAttempts && chain.Result == null);
 
-            Debug.Log($"{Type} count: {_count}. attempts: {attempts} / {maxAttempts} \n====================================");
+            Debug.Log($"{Type} count: {count}. attempts: {attempts} / {maxAttempts} \n====================================");
 
             _isGeneration = false;
             waitResult.SetResult((_positionsChain = chain.Result) != null);
@@ -58,6 +56,7 @@ public class LevelOne : ALevel
     public override void Create()
     {
         _colorGenerator.GenerateOne();
+        _count = _positionsChain.Count + 1;
         _jewels = new(_count);
 
         _laserOne = _actorsPool.GetLaser(_positionsChain.Laser, TYPE_ONE, _count + 1);

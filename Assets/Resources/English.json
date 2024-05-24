@@ -2,7 +2,7 @@
   "Id": "1",
   "CodeISO639_1": "en",
 
-  "LasersJewels": "Lasers and jewels",
+  "LasersJewels": "Lasers & Jewels",
 
   "Music": "Music",
   "SFX": "Sound",
@@ -28,5 +28,6 @@
   "Control": "Control",
   "GameRules": "Game rules",
   "Enjoy": "Have fun playing!",
-  "GameRulesText": "  The goal of the game is to guide the laser through all the jewels to the last one."
+  "GameRulesText1": "  The goal of the game is to guide the laser beam through all the jewels to the final one."  ,
+  "GameRulesText2": "  White jewels transmit laser beams of any color; colored ones transmit only beams of their own color."
 }

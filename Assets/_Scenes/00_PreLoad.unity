@@ -484,9 +484,9 @@ MonoBehaviour:
   _keySave: gmd
   _minJewel: 14
   _maxJewel: 38
-  _minJewelEndGame: 24
+  _minJewelEndGame: 22
   _hintStart: 3
-  _hintPerScore: 500
+  _hintPerScore: 450
 --- !u!4 &523976399
 Transform:
   m_ObjectHideFlags: 0
@@ -629,7 +629,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 9e32bed4354ee284785e950309e531f2, type: 2}
   m_audioClip: {fileID: 8300000, guid: 6e555f95a27b58a47bc115a4cd66331e, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.504
+  m_Volume: 0
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -815,7 +815,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c915583dd8e761f4ab53c1ede6f5d067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _keySave: LAJtest10
+  _keySave: LAJ
   _sceneDesktop: 1
   _sceneMobile: 2
   _slider: {fileID: 8094356267688871992}

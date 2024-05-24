@@ -15,7 +15,6 @@ public abstract class ALevel
     protected bool _isGeneration, _allowedHint;
 
     protected IJewel this[Vector2Int index] { get => _area[index.x, index.y]; set => _area[index.x, index.y] = value; }
-    protected virtual int RemoveCountHint => 1;
 
     public abstract LevelType Type { get; }
     public bool IsGeneration => _isGeneration;
@@ -83,7 +82,7 @@ public abstract class ALevel
         if (!_allowedHint) return false;
 
         _allowedHint = false;
-        int count = Mathf.RoundToInt((_count - RemoveCountHint) * present);
+        int count = Mathf.RoundToInt(_count * present);
 
         while (count > 0) 
             if (_jewels.Rand().ShowHint())

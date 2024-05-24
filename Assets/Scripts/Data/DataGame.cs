@@ -111,8 +111,8 @@ public class DataGame : ASingleton<DataGame>
 
         if (count > _maxJewel)
         {
-            _data.countJewel = Random.Range(_minJewelEndGame, _maxJewel + 1);
             _data.type = _types.Rand;
+            _data.countJewel = Random.Range(_minJewelEndGame, _maxJewel) + ((_data.type == LevelType.One || _data.type == LevelType.Two) ? _data.type == LevelType.One ? 2 : 0 : -1);
             return;
         }
 

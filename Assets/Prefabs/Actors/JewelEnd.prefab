@@ -752,7 +752,7 @@ ParticleSystem:
     angle: 25
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
-    radiusThickness: 0.9
+    radiusThickness: 1
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
@@ -4969,4 +4969,4 @@ MonoBehaviour:
     _durationShowHide: 1
   _particle: {fileID: 2466002474862386052}
   _brightnessParticle: 1.2
-  _timeShowHide: {x: 1, y: 2}
+  _timeShowHide: {x: 1.25, y: 1.5}
