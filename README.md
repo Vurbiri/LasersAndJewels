@@ -1,5 +1,5 @@
 <div align="center"> 
-<a href="https://play.unity.com/en/games/4f6c6852-92bd-49ff-998a-045ac81623cf/digitis" target="_blank" rel="noopener noreferrer">
+<a href="https://play.unity.com/en/games/8da6a906-f2db-4d2e-a72e-a6325ec9f0ba/lasers-jewels" target="_blank" rel="noopener noreferrer">
 <img src="img/Cover_eng.png" alt="Cover" title="Lasers & Jewels" width="500" > 
 </a>
 </div>
@@ -29,7 +29,7 @@
 <br>
 
 <div align="center"> 
-<a href="https://play.unity.com/en/games/4f6c6852-92bd-49ff-998a-045ac81623cf/digitis" target="_blank" rel="noopener noreferrer">
+<a href="https://play.unity.com/en/games/8da6a906-f2db-4d2e-a72e-a6325ec9f0ba/lasers-jewels" target="_blank" rel="noopener noreferrer">
 <img src="img/PlayButton.png" alt="Play" title="Play"> 
 </a>
 </div>
