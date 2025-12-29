@@ -55,7 +55,7 @@ public class DataGame : ASingleton<DataGame>
 
         return data.Result;
     }
-    public void Save(Action<bool> callback = null) => StartCoroutine(Storage.Save_Coroutine(_keySave, _data, callback));
+    public bool Save() => Storage.Save(_keySave, _data);
 
     public void StartLevel()
     {
@@ -68,7 +68,7 @@ public class DataGame : ASingleton<DataGame>
         ScoreAdd();
         _data.level++;
 
-        Save((bool result) => Message.Saving("GoodSave", result));
+        Message.Saving("GoodSave", Storage.Save(_keySave, _data));
 
         CalkTypeAndCountJewel();
 

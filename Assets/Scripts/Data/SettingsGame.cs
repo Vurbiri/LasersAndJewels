@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -61,13 +60,13 @@ public class SettingsGame : ASingleton<SettingsGame>
 
     public float GetVolume(AudioType type) => _profileCurrent.volumes[type.ToInt()];
 
-    public void Save(Action<bool> callback = null)
+    public bool Save()
     {
         _profileCurrent.idLang = _localization.CurrentId;
         foreach (var type in Enum<AudioType>.GetValues())
             _profileCurrent.volumes[type.ToInt()] = _volumes[type].Volume;
 
-        StartCoroutine(Storage.Save_Coroutine(_profileCurrent.key, _profileCurrent, callback));
+        return Storage.Save(_profileCurrent.key, _profileCurrent);
     }
     private bool Load()
     {
